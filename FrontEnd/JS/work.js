@@ -1,4 +1,5 @@
 const HOST = "http://localhost:5678";
+const TOKEN_KEY = "sbtoken";
 const BUTTON_ALL_ID = 0; // L'identifiant 0  est réservé pour le bouton Tous
 const BUTTON_ALL_NAME = "Tous";
 
@@ -56,18 +57,11 @@ function generateWorks(works) {
     gallery.innerHTML = "";
   
     works.forEach((work) => {
-      const figure = document.createElement("figure");
-  
-      const img = document.createElement("img");
-      img.src = work.imageUrl;
-      img.alt = work.title;
-  
-      const figcaption = document.createElement("figcaption");
-      figcaption.innerText = work.title;
-  
-      figure.appendChild(img);
-      figure.appendChild(figcaption);
-      gallery.appendChild(figure);
+        const figure = createImgElement(work);
+        const figcaption = document.createElement("figcaption");
+        figcaption.innerText = work.title;
+        figure.appendChild(figcaption);
+        gallery.appendChild(figure);
     });
 }
 
@@ -140,6 +134,8 @@ function opendDeleteModal(event) {
     modal.querySelector('.modal-stop').addEventListener('click',stopPropagation);
 
     currentModal = modal;
+
+    generateWorksInModal(works);
 }
 
 function closeModal(event){
@@ -160,4 +156,88 @@ function closeModal(event){
 
 function stopPropagation(event) {
     event.stopPropagation(); 
+}
+
+function createImgElement(work ) {
+    const figure = document.createElement("figure");
+    figure.id = "work"+work.id;
+
+    const img = document.createElement("img");
+    img.src = work.imageUrl;
+    img.alt = work.title;
+    figure.appendChild(img);
+    return figure;
+}
+
+function generateWorksInModal(works) {
+    const gallery = document.querySelector(".modal-gallery");
+    gallery.innerHTML = "";
+  
+    works.forEach((work) => {
+        const figure = createImgElement(work);
+
+        const trashImg = document.createElement("img");
+        trashImg.classList.add("trash");
+        trashImg.id = work.id;
+        trashImg.src = "../assets/icons/trash-can-solid.png";
+        trashImg.alt = "trash "+work.title;
+        trashImg.addEventListener("click", (event) => {
+            const id = event.target.id; 
+            deleteWork(Number(id));
+        });
+
+        figure.appendChild(trashImg);
+        gallery.appendChild(figure);
+    });
+}
+
+/**
+ * Supprimer un travail d'identifiant workId
+ * @param {*} workId L'identifiant du travail à supprimer
+ * @returns 
+ */
+async function deleteWork(workId){
+    try{
+        var debug = false; // POUR TEST - A ENLEVER
+        if(debug) {
+            // Mettre à jour la liste des travaux
+            works = works.filter(work => work.id!==workId);
+        
+            // Mettre à jour la galerie
+            const figureGalerie = document.getElementById("work"+workId);
+            figureGalerie.remove();
+
+            // Mettre à jour la modale
+            const figureModale = document.getElementById("work"+workId);
+            figureModale.remove();
+        }
+        else {
+        var storedToken =window.localStorage.getItem(TOKEN_KEY);
+
+        if(storedToken === null || storedToken === undefined) return;
+
+        const reponse = await fetch(`http://localhost:5678/api/works/${workId}`, {
+            method: "DELETE",
+            headers: {  authorization : `Bearer ${storedToken}` }
+        });
+
+        if(reponse.status===204){
+            // Mettre à jour la liste des travaux
+            works = works.filter(work => work.id!==workId);
+        
+            // Mettre à jour la galerie
+            const figureGalerie = document.getElementById("work"+workId);
+            figureGalerie.remove();
+
+            // Mettre à jour la modale
+            const figureModale = document.getElementById("work"+workId);
+            figureModale.remove();
+        }
+        else{
+            throw new Error(`Suppression : ${reponse.status}`);
+        }
+    }
+    }catch(error){
+        console.log("Suppression : " + error);  
+    }
 }
