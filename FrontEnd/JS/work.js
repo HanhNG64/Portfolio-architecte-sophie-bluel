@@ -29,7 +29,9 @@ catch(error) {
 }
 generateFilters(categories, works);
 
-
+// Open delete modal
+var currentModal;
+document.querySelector('.btn-modify').addEventListener('click', opendDeleteModal)
 
 /********************************** FONCTIONS ************************** */
 
@@ -124,4 +126,38 @@ function filter(categorieId, works) {
         generateWorks(filterWorks);
     }
 }
-  
+
+function opendDeleteModal(event) {
+    event.preventDefault();
+
+    const modal = document.querySelector('.delete-modal');
+    modal.style.display = null;
+    modal.removeAttribute('aria-hidden');
+    modal.setAttribute('aria-modal',true);
+
+    modal.addEventListener('click', closeModal);
+    modal.querySelector('.modal-close').addEventListener('click', closeModal);
+    modal.querySelector('.modal-stop').addEventListener('click',stopPropagation);
+
+    currentModal = modal;
+}
+
+function closeModal(event){
+    event.preventDefault();
+
+    if(currentModal === null) return;
+
+    currentModal.style.display = "none";
+    currentModal.setAttribute('aria-hidden',true);
+    currentModal.removeAttribute('aria-modal');
+
+    currentModal.removeEventListener('click', closeModal);
+    currentModal.querySelector('.modal-close').removeEventListener('click', closeModal);
+    currentModal.querySelector('.modal-stop').removeEventListener('click',stopPropagation);
+
+    currentModal = null;
+}
+
+function stopPropagation(event) {
+    event.stopPropagation(); 
+}

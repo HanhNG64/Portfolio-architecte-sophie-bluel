@@ -36,10 +36,21 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets</h2>
-		<div class="filter"></div>
-		<div class="gallery">
+		<div class="projet">
+			<h2>Mes Projets</h2>
+			<button class="btn-modify"><img src="./assets/icons/group.png" alt="group"><span class="text">modifier</span></button>
 		</div>
+		<div class="filter"></div>
+		<div class="gallery"></div>
+		<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc" style="display: none;">
+			<div class="delete-modal-wrapper modal-stop">
+				<button aria-label="close modal" class="modal-close"><img src="./assets/icons/xmark.png" alt="group"></button>
+				<h1 id="modal-title">Galerie photo</h1>
+				<div class="photos" id="delete-dialog-desc"></div>
+				<hr>
+				<button class="btn-add">Ajouter une photo</button>
+			</div>
+		</aside>
 	</section>
 	<section id="contact">
 		<h2>Contact</h2>
