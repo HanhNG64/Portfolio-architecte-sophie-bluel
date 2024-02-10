@@ -86,6 +86,7 @@ function getUser(event) {
     const userToLog = {
         // email: event.target.querySelector("[name=email]").value,
         // password: event.target.querySelector("[name=pwd]").value,
+        // TEST - A ENLEVER
         email: "sophie.bluel@test.tld",
         password: "S0phie",
     };

@@ -323,3 +323,86 @@ hr {
 .modal-gallery .trash:hover{
 	cursor: pointer;
 }
+
+/************ Ajout********/
+.add-modal{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.add-modal-wrapper {
+	position: absolute;
+	overflow: auto;
+	width: 630px;
+	height: 688px;
+	background: #fff;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.btn-validate {
+	border-radius: 60px;
+	border-width: 1px;
+	border-color: #1d6154;
+	font-family: "Syne";
+	font-weight: 700;
+	font-size: 20px;
+	color: #1d6154;
+	width: 237px;
+	height: 36px;
+	align-self: center;
+}
+
+.add-modal-wrapper form {
+	text-align: left;
+	margin-top: 0px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 105px;
+	gap: 20px;
+}
+
+.add-modal-wrapper .file {
+	width: 100%;
+	height: 104px;
+	padding: 105px;
+}
+
+.loadImage {
+	width: 100%;
+	height: 169px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #E8F1F6;
+}
+ 
+.preview {
+	display: none;
+	width: 100%;
+	height: 169px;
+	object-fit: contain;
+	background-color: #E8F1F6;
+}
+
+.modal-previous {
+	height: 24px;
+	width: 24px;
+	border: none;
+	position: absolute; 
+	top: 26px;
+	left: 30px;
+	cursor: pointer;
+	background: #fff;
+}
