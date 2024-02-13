@@ -1,44 +1,43 @@
-const HOST = "http://localhost:5678";
+const HOST = "http://localhost:5678/api";
 const TOKEN_KEY = "sbtoken";
+const EMAIL_PATTERN =/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/; // Regex for email
+const PW_PATTERN = /^(?=.*[A-z])(?=.*[A-Z])(?=.*[0-9])\S{6,12}$/; // Regex for password : At least one letter, with a capital letter, a number, between 6 and 12 characters.
 
-// Ecouter le formulaire
-addListerForm();
 
-/********************************** FONCTIONS ************************** */
+// Add a listener to the form
+const loginForm = document.getElementById("login");
+loginForm.addEventListener("submit", function (event) {
+  // Disable page loading
+  event.preventDefault();
+  connect(event);
+});
+
+
+/********************************** FUNCTIONS ************************** */
 
 /**
- * Ajouter un listener au formulaire
+ * Connect the user as Admin
+ * @param {*} event 
+ * @returns 
  */
-function addListerForm() {
-  const loginForm = document.getElementById("login");
-  loginForm.addEventListener("submit", function (event) {
-    // Désactiver le chargement de la page
-    event.preventDefault();
-    connect(event);
-  });
-
-  
-  const email = document.getElementById("email");
-  email.addEventListener("keyup", function (event) {
-    if (email.validity.typeMismatch) {
-      email.setCustomValidity("Veuillez entrer un email valide");
-    } else {
-      email.setCustomValidity("");
-    }
-  });
-}
-
 async function connect(event) {
   try {
-    // Se logger
+    // Validate the data entered
+    if(!validate(event)){
+        var errorElt = document.querySelector(".error");
+        errorElt.innerHTML = "Nom d'utilisateur ou mot de passe incorrect, veuillez corriger les informations saisies.";
+        errorElt.className = "error active";
+        return;
+    }
+
+    // Log the user
     var userLogged = await logIn(event);
 
-    // Stocker le token dans localStorage
+    // Store the token in localStorage
     let token = userLogged.token;
     window.localStorage.setItem(TOKEN_KEY, token);
-    console.log(window.localStorage.getItem(TOKEN_KEY));
 
-    // Redirection vers la page d'accueil
+    // Redirect to home page
     window.location.href = "../index.html";
   } catch (error) {
     console.log(error);
@@ -46,21 +45,18 @@ async function connect(event) {
 }
 
 /**
- * Logger l'utilisateur passé en paramètre
- * @param {*} user L'utlisateur à logger
- * @returns L'utilisateur loggé contenant un token et un id
+ * Log the user passed as a parameter
+ * @param {*} user The user to log
+ * @returns A user with his token and id
  */
-async function logIn(user) {
-    // Créer la charge utile
-    var userToLog = getUser(user);
-    var userJSon = JSON.stringify(userToLog);
-
-    // Se logger
+async function logIn(user) {  
+    var userToLog = buildUser(user);
+    // Log the user
     try {
-        const reponse = await fetch(HOST+"/api/users/login", {
+        const reponse = await fetch(HOST+"/users/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: userJSon,
+            body: JSON.stringify(userToLog)
         });
 
         if (!reponse.ok) {
@@ -69,28 +65,39 @@ async function logIn(user) {
 
         return reponse.json();
     } catch (error) {
-        // S'il est invalide, on affiche un message d'erreur personnalisé
+        // Display an error message
         var errorElt = document.querySelector(".error");
-        errorElt.innerHTML = "Login Erreur";
+        errorElt.innerHTML = "Identifiant invalide.";
         errorElt.className = "error active";
         throw error;
     }
 }
 
 /**
- * Récupérer l'utilisateur à partir de l'évenement du formaulaire
+ * Build an user from the form
  * @param {*} event
- * @returns Renvoyer un utilisateur avec son email et son mdp
+ * @returns a user with his email and pwd
  */
-function getUser(event) {
+function buildUser(event) {
     const userToLog = {
-        // email: event.target.querySelector("[name=email]").value,
-        // password: event.target.querySelector("[name=pwd]").value,
-        // TEST - A ENLEVER
-        email: "sophie.bluel@test.tld",
-        password: "S0phie",
+        email: event.target.querySelector("[name=email]").value,
+        password: event.target.querySelector("[name=pwd]").value,
     };
   
     return userToLog;
 }
-  
+
+/**
+ * Validate user 
+ * @param {*} event 
+ * @returns True if all data is required, false Otherwise
+ */
+function validate(event) {
+  var email = event.target.querySelector("[name=email]").value;
+  var password = event.target.querySelector("[name=pwd]").value;
+
+  var emailValid = email === undefined ? false :  EMAIL_PATTERN.test(email.trim());  
+  var pwValid = password === undefined ? false : PW_PATTERN.test(password.trim());  
+
+  return  emailValid && pwValid;
+}
