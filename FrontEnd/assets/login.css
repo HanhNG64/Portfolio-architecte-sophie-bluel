@@ -51,6 +51,15 @@ header {
   margin: 50px 0;
 }
 
+header a {
+	text-decoration: none; 
+	 color: #000;
+}
+
+header .loginItem {
+  font-weight: 700;
+}
+
 section {
   margin: 50px 0;
 }
@@ -90,10 +99,6 @@ nav li {
 
 li:hover {
   color: #b1663c;
-}
-
-.loginItem {
-  font-weight: 700;
 }
 
 #login {

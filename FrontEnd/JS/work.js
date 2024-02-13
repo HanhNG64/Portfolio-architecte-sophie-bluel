@@ -75,6 +75,7 @@ function updateConnectionMode(){
 
     var logoutDisplay = isAdminMode ? "block" : "none";
     var loginDisplay = isAdminMode ? "none" : "block";
+    var editionModeDisplay = isAdminMode ? "flex" : "none";
 
     var loginElt = document.querySelector('.login');
     loginElt.style.display = loginDisplay;
@@ -84,6 +85,9 @@ function updateConnectionMode(){
 
     var modifyElt = document.querySelector('.btn-modify');
     modifyElt.style.display = logoutDisplay;
+
+    var edtionModeElt = document.querySelector('.edition-mode');
+    edtionModeElt.style.display = editionModeDisplay;
 }
 
 /**
