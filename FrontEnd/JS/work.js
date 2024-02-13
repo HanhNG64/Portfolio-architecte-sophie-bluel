@@ -2,7 +2,7 @@ const HOST = "http://localhost:5678/api";
 const TOKEN_KEY = "sbtoken";
 const BUTTON_ALL_ID = 0; // ID of the filter button for ALL
 const BUTTON_ALL_NAME = "Tous"; // Name of the filter button for ALL
-
+const TITLE_PATTERN = "^[a-zA-Z0-9.\\-_\\s@]{3,5}$"; // Regex for image title
 var categorySelectedBtn;
 var currentModal;
 var deleteModal;
@@ -134,7 +134,7 @@ async function postWork(work) {
  * @param {*} workId the ID of the work to delete
  * @returns 
  */
-async function deleteWork(workId, works){
+async function deleteWork(workId){
     try{
         var storedToken =window.localStorage.getItem(TOKEN_KEY);
 
@@ -148,7 +148,7 @@ async function deleteWork(workId, works){
         if(reponse.status===204){
             // Update works list
             works = works.filter(work => work.id!==workId);
-        
+
             // Update the display
             document.querySelectorAll(".work"+workId).forEach(work=> {
                 work.remove();
@@ -303,9 +303,17 @@ function opendAddModal(event) {
  * @param {*} event 
  */
 async function addWork(event){
-    // Désactiver le chargement de la page
     event.preventDefault();
     try {
+        //Validate 
+        if(!validateWork(event)) {
+            var errorElt = document.querySelector(".add-modal-error");
+            errorElt.style.display = "block";
+            errorElt.innerHTML = "Les conditions ne sont pas requises.";
+            errorElt.className = "add-modal-error active";
+            return;
+        }
+
         // Add a work in the API 
         var data = buildFormData(event);
         const work = await postWork(data);
@@ -392,7 +400,7 @@ function generateWorksInModal(works) {
             trashImg.src = "../assets/icons/trash-can-solid.png";
             trashImg.alt = "trash "+work.title;
             trashImg.addEventListener('click', (event) => {
-                deleteWork(Number(event.target.id),works);
+                deleteWork(Number(event.target.id));
             });
 
             figure.appendChild(trashImg);
@@ -407,7 +415,7 @@ function generateWorksInModal(works) {
  * Generate the selected categories options
  * @param {*} catégories Category choices
  */
-function generateCategoriesOptions(catégories) {
+function generateCategoriesOptions(categories) {
     const categoryElt = document.querySelector('.categorySelect');
     categoryElt.innerHTML="";
     var filterCategories = categories.filter(category => category.id !== BUTTON_ALL_ID )
@@ -449,7 +457,6 @@ function refreshPreview() {
   * @param {*} work New work to add in the list works
   */
 function updateWorksList(work, works){
-    // Mettre à jour la liste des travaux
     // Update the list of works
     works.push(work);
 
@@ -472,7 +479,7 @@ function updateWorksList(work, works){
  * @returns a FormData
  */
 function buildFormData(event) {
-    var image = event.target.querySelector('input[type=file]').files[0];
+    const image = event.target.querySelector('input[type=file]').files[0];
     const title = event.target.querySelector('[name=title]').value;
     const category = event.target.querySelector('[name=categorySelect]').value;
    
@@ -482,4 +489,32 @@ function buildFormData(event) {
     formData.append("category", Number(category));
   
     return formData;
+}
+
+/**
+ * Valid new work to add
+ * @param {*} event 
+ * @returns True if all data is required, false Otherwise
+ */
+function validateWork(event) {
+    var regPattern = new RegExp(TITLE_PATTERN,"g");
+
+    const image = event.target.querySelector('input[type=file]').files[0];
+    const title = event.target.querySelector('[name=title]').value;
+    const category = event.target.querySelector('[name=categorySelect]').value;
+
+    var imageValid =  image === undefined ? false : fileSizeMo(image.size) <= 40;
+    var titleValid = title === undefined ? false : regPattern.test(title.trim());  
+    var categoryValid = category !== undefined;  
+
+    return  titleValid && imageValid && categoryValid;
+}
+
+/**
+ * Convert file size to Mo
+ * @param {*} size size in Oct
+ * @returns size in Mo
+ */
+function fileSizeMo(size){
+    return (size/(1024*1024)).toFixed(2);
 }
