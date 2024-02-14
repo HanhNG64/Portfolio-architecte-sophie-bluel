@@ -58,6 +58,14 @@ catch(error) {
 }
 generateFilters(categories);
 
+// Apply default filter
+const categorie = categories.filter(categorie=> categorie.id === BUTTON_ALL_ID).shift();
+if(categorie && categorySelectedBtn === undefined) {
+    const btn = document.getElementById(categorie.id);
+    btn.classList.add("selected");
+    categorySelectedBtn = btn;
+}
+
 // Open delete modal
 document.querySelector('.btn-modify').addEventListener('click', openDeleteModal);
 
@@ -217,19 +225,12 @@ function generateFilters(categories) {
   
         // Add listener
         btn.addEventListener('click', (event) => {
-            const id = event.target.id;
             btn.classList.add("selected");
-            console.log("FILTRE:"+works.length)
-            filter(Number(id));
+            filter(Number(event.target.id));
 
-            categorySelectedBtn.classList.remove("selected");
+           if(categorySelectedBtn) categorySelectedBtn.classList.remove("selected");
             categorySelectedBtn = btn;    
         });
-
-        // Apply default filter
-        if(categorie.id === BUTTON_ALL_ID && categorySelectedBtn === undefined){
-            categorySelectedBtn = btn;
-        }
     });
 
     /**
