@@ -2,7 +2,9 @@ const HOST = "http://localhost:5678/api";
 const TOKEN_KEY = "sbtoken";
 const BUTTON_ALL_ID = 0; // ID of the filter button for ALL
 const BUTTON_ALL_NAME = "Tous"; // Name of the filter button for ALL
-const TITLE_PATTERN = "^[a-zA-Z0-9.\\-_\\s@]{3,5}$"; // Regex for image title
+const TITLE_PATTERN = /^[a-zA-Z0-9._\séèàç,"#?!@$%^&*;'+-]{3,50}$/; // Regex for image title
+const IMG_EXT = ["png", "jpg"]; 
+
 var categorySelectedBtn;
 var currentModal;
 var deleteModal;
@@ -500,17 +502,17 @@ function buildFormData(event) {
  * @returns True if all data is required, false Otherwise
  */
 function validateWork(event) {
-    var regPattern = new RegExp(TITLE_PATTERN,"g");
-
     const image = event.target.querySelector('input[type=file]').files[0];
     const title = event.target.querySelector('[name=title]').value;
     const category = event.target.querySelector('[name=categorySelect]').value;
-
-    var imageValid =  image === undefined ? false : fileSizeMo(image.size) <= 40;
-    var titleValid = title === undefined ? false : regPattern.test(title.trim());  
+    
+    var imageValid = image === undefined ? false : fileSizeMo(image.size) <= 4;// Accept only images less than 4MB
+    var extensionValid = image === undefined ? false : IMG_EXT.includes(fileExtension(image));
+    var titleValid = title === undefined ? false : TITLE_PATTERN.test(title.trim());  
     var categoryValid = category !== undefined;  
-
-    return  titleValid && imageValid && categoryValid;
+ 
+    console.log("fileExtension(image)"+fileExtension(image)+ "  " + extensionValid);
+    return  titleValid && imageValid && categoryValid && extensionValid;
 }
 
 /**
@@ -519,5 +521,15 @@ function validateWork(event) {
  * @returns size in Mo
  */
 function fileSizeMo(size){
-    return (size/(1024*1024)).toFixed(2);
+    return (size/(1024*1024));
+}
+
+/**
+ * Get file extension
+ * @param {*} file The file
+ * @returns the extension the of the file
+ */
+function fileExtension(file){
+    const [ext, ...fileName] = file.name.split('.').reverse();
+    return ext;
 }
