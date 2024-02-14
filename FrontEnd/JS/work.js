@@ -98,6 +98,9 @@ function updateConnectionMode(){
 
     var edtionModeElt = document.querySelector('.edition-mode');
     edtionModeElt.style.display = editionModeDisplay;
+
+    var headerElt = document.querySelector('header');
+    headerElt.style.margin =  isAdminMode ? "38px 0 0 0" : "50px 0";
 }
 
 /**
@@ -157,9 +160,7 @@ async function deleteWork(workId){
 
         if(reponse.status===204){
             // Update works list
-            console.log("AV SUP:"+works.length);
             works = works.filter(work => work.id!==workId);
-            console.log("AP SUP:"+works.length);
             // Update the display
             document.querySelectorAll(".work"+workId).forEach(work=> {
                 work.remove();

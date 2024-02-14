@@ -46,29 +46,34 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+
 /** end reset css**/
+:root {
+	--bg-color : #FFFEF8;
+	--main-color: #1D6154;
+}
+
 body {
-	max-width: 1140px;
-	margin:auto;
+	background-color: var(--bg-color);
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 }
 
-header {
-	display: flex;
-	flex-direction: column;
+.main-container {
+	max-width: 1140px;
+	margin:auto;
 }
+
+/******* HEADER *******/
 
 .edition-mode {
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: center; 
 	gap: 11px;
 	width: 100%;
 	height: 59px;
-	font-family: "Work Sans";
 	font-size: 16px;
-	font-weight: 400;
 	color: #FFF;
 	background-color: #000;
 }
@@ -79,7 +84,7 @@ header {
 	height: 15px;
 }
 
-.nav-bar {
+header {
 	display: flex;
 	justify-content: space-between;
 	margin: 50px 0;
@@ -88,10 +93,6 @@ header {
 header a {
 	text-decoration: none;
 	color: #000;
-}
-
-section {
-	margin: 50px 0
 }
 
 h1{
@@ -107,83 +108,111 @@ h1 > span {
 	font-family: 'Work Sans';
 	font-size:10px;
 	letter-spacing: 0.1em;
-;
+}
+
+nav img {
+	width: 22px;
+}
+
+/******* MAIN *******/
+
+main {
+	margin: 0 95px 0 95px;
+}
+
+section {
+	margin: 50px 0
 }
 
 h2{
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
-	color: #1D6154
-}
-nav ul {
-	display: flex;
-	align-items: center;
-	list-style-type: none;
-
-}
-nav li {
-	padding: 0 10px;
-	font-size: 1.2em;
+	color: var(--main-color);
 }
 
-li:hover {
-	color: #B1663C;
-}
+/**** Introduction *****/
+
 #introduction {
 	display: flex;
 	align-items: center;
+	margin: 89px 0;
 }
+
 #introduction figure {
-	flex: 1
+	flex: 1;
 }
+
 #introduction img {
 	display: block;
-	margin: auto;
-	width: 80%;
+	width: 85%;
 }
 
 #introduction article {
-	flex: 1
+	flex: 1;
+	max-width: 404px;
 }
+
 #introduction h2 {
 	margin-bottom: 1em;
 }
 
 #introduction p {
-	margin-bottom: 0.5em;
-}
-#portfolio h2 {
-	text-align: center;
 	margin-bottom: 1em;
 }
-/***********FILTRE**************/
+
+/**** Portfolio *****/
+
+#portfolio {
+	position: relative;
+}
+
+#portfolio h2 {
+	text-align: center;
+}
+
+.btn-modify {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+	position: absolute;
+	left: 63%; 
+	top: 8px;
+}
+
+.btn-modify:hover {
+	text-decoration: underline;
+}
+
+/**** Filtre *****/
 .filter {
 	display: flex;
-	gap: 15px;
+	gap: 10px;
 	justify-content: center;
 	height: 37px;
-	padding-bottom: 50px;
+	padding: 51px 0;
 }
 
 .filter button {
 	border-radius: 60px;
-	border-width: 1px;
-	border-color: #1d6154;
+	border:  1px solid var(--main-color);
 	font-family: "Syne";
 	font-weight: 700;
-	font-size: 20px;
-	color: #1d6154;
-	padding: 10px;
-	height: 50px;
+	font-size: 16px;
+	color:  var(--main-color);
+	padding: 9px 10px;
+	height: 37px;
 }
   
 .filter button:hover, .filter button.selected {
 	color: white;
-	background-color: #1d6154;
+	background-color: var(--main-color);
 }
 
-/*************************/
+/*********** Gallery ************/
 
 .gallery {
 	width: 100%;
@@ -195,82 +224,11 @@ li:hover {
 
 .gallery img {
 	width: 100%;
-
-}
-#contact {
-	width: 50%;
-margin: auto;
-}
-#contact > * {
-	text-align: center;
-
-}
-#contact h2{
-	margin-bottom: 20px;
-}
-#contact form {
-	text-align: left;
-	margin-top:30px;
-	display: flex;
-	flex-direction: column;
+	height: 413px;
+	object-fit: cover;
 }
 
-#contact input {
-	height: 50px;
-	font-size: 1.2em;
-	border: none;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
-}
-#contact label {
-	margin: 2em 0 1em 0;
-}
-#contact textarea {
-	border: none;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
-}
-
-input[type="submit"]{
-	font-family: 'Syne';
-	font-weight: 700;
-	color: white;
-	background-color: #1D6154;
-	margin : 2em auto ;
-	width: 180px;
-	text-align: center;
-	border-radius: 60px ;
-}
-
-footer nav ul {
-	display: flex;
-	justify-content: flex-end;
-	margin: 2em
-}
-
-/************ Projets ******************/
-.projet {
-	display: flex;
-	justify-content: center;
-	align-items: baseline;
-	gap: 25px;
-}
-
-.btn-modify {
-	display: flex;
-	align-items: baseline;
-	gap: 10px;
-	border: none;
-	background-color: transparent;
-
-	cursor: pointer;
-	font-family: "Work Sans";
-	font-size: 14px;
-	font-weight: 400;
-}
-
-.btn-modify:hover {
-	text-decoration: underline;
-}
-
+/******* Delete modal *******/
 .delete-modal{
 	display: flex;
 	align-items: center;
@@ -316,11 +274,11 @@ footer nav ul {
 .btn-add {
 	border-radius: 60px;
 	border-width: 1px;
-	border-color: #1d6154;
+	border-color: var(--main-color);
 	font-family: "Syne";
 	font-weight: 700;
 	font-size: 20px;
-	color: #1d6154;
+	color: var(--main-color);
 	width: 237px;
 	height: 36px;
 }
@@ -356,7 +314,7 @@ hr {
 	cursor: pointer;
 }
 
-/************ Ajout********/
+/************ Add modal********/
 .add-modal{
 	display: flex;
 	align-items: center;
@@ -385,11 +343,11 @@ hr {
 .btn-validate {
 	border-radius: 60px;
 	border-width: 1px;
-	border-color: #1d6154;
+	border-color: var(--main-color);
 	font-family: "Syne";
 	font-weight: 700;
 	font-size: 20px;
-	color: #1d6154;
+	color: var(--main-color);
 	width: 237px;
 	height: 36px;
 	align-self: center;
@@ -439,8 +397,6 @@ hr {
 	background: #fff;
 }
 
-
-/* Voici la mise en forme pour les erreurs */
 .add-modal-error {
 	width: 100%;
 	padding: 0;
@@ -457,4 +413,88 @@ hr {
   .add-modal-error.active {
 	padding: 3px;
   }
-  
+
+/******* FOOTER *******/
+footer {
+	display: flex;
+	justify-content: end;
+	width: 100%;
+	height: 60px;
+	background-color:  #FFF;
+}
+
+footer nav {
+	display: flex;
+}
+
+footer nav ul {
+	display: flex;
+	justify-content: flex-end;
+	margin: 2em
+}
+
+nav ul {
+	display: flex;
+	align-items: center;
+	list-style-type: none;
+
+}
+
+nav li {
+	padding: 0 10px;
+	font-size: 1.2em;
+}
+
+li:hover {
+	color: #B1663C;
+}
+
+/******* CONTACT *******/
+
+#contact {
+	width: 50%;
+margin: auto;
+}
+
+#contact > * {
+	text-align: center;
+
+}
+
+#contact h2{
+	margin-bottom: 20px;
+}
+
+#contact form {
+	text-align: left;
+	margin-top:30px;
+	display: flex;
+	flex-direction: column;
+}
+
+#contact input {
+	height: 50px;
+	font-size: 1.2em;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+#contact label {
+	margin: 2em 0 1em 0;
+}
+
+#contact textarea {
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+input[type="submit"]{
+	font-family: 'Syne';
+	font-weight: 700;
+	color: white;
+	background-color: var(--main-color);
+	margin : 2em auto ;
+	width: 180px;
+	text-align: center;
+	border-radius: 60px ;
+}
