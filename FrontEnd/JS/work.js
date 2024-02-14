@@ -56,7 +56,7 @@ try {
 catch(error) {
     console.log(error);
 }
-generateFilters(categories, works);
+generateFilters(categories);
 
 // Open delete modal
 document.querySelector('.btn-modify').addEventListener('click', openDeleteModal);
@@ -147,8 +147,9 @@ async function deleteWork(workId){
 
         if(reponse.status===204){
             // Update works list
+            console.log("AV SUP:"+works.length);
             works = works.filter(work => work.id!==workId);
-
+            console.log("AP SUP:"+works.length);
             // Update the display
             document.querySelectorAll(".work"+workId).forEach(work=> {
                 work.remove();
@@ -204,7 +205,7 @@ async function getCategories(){
  * @param {*} categories Categories to filter
  * @param {*} works Works used for the filtering function
  */
-function generateFilters(categories,works) {
+function generateFilters(categories) {
     const filterElt = document.querySelector('.filter');
     categories.forEach((categorie) => {
         // Create button for a given category
@@ -218,7 +219,8 @@ function generateFilters(categories,works) {
         btn.addEventListener('click', (event) => {
             const id = event.target.id;
             btn.classList.add("selected");
-            filter(Number(id),works);
+            console.log("FILTRE:"+works.length)
+            filter(Number(id));
 
             categorySelectedBtn.classList.remove("selected");
             categorySelectedBtn = btn;    
@@ -235,7 +237,7 @@ function generateFilters(categories,works) {
      * @param {*} categorieId The category identifier to filter
      * @param {*} works Works to filter
      */
-    function filter(categorieId, works) {
+    function filter(categorieId) {
         if(works.length) {
             var filterWorks = categorieId === BUTTON_ALL_ID ? works :  works.filter(work => categorieId === work.categoryId);
             generateWorks(filterWorks);
@@ -263,7 +265,7 @@ function openDeleteModal(event) {
     currentModal = deleteModal;
 
     // Display works in the modal
-    generateWorksInModal(works);
+    generateWorksInModal();
 }
 
 /**
@@ -295,7 +297,7 @@ function opendAddModal(event) {
     currentModal = addModal;
 
     // Build select catetogies options
-    generateCategoriesOptions(categories);
+    generateCategoriesOptions();
 }
 
 /**
@@ -320,7 +322,7 @@ async function addWork(event){
         work.categoryId = Number(work.categoryId);
 
         // Update the display
-        updateWorksList(work,works);
+        updateWorksList(work);
 
         // Close modal
         closeModal(event);
@@ -386,7 +388,7 @@ function createWorkNode(work) {
  * Generate and display works in the modal
  * @param {*} works 
  */
-function generateWorksInModal(works) {
+function generateWorksInModal() {
     const gallery = document.querySelector('.modal-gallery');
     gallery.innerHTML = "";
   
@@ -415,7 +417,7 @@ function generateWorksInModal(works) {
  * Generate the selected categories options
  * @param {*} catégories Category choices
  */
-function generateCategoriesOptions(categories) {
+function generateCategoriesOptions() {
     const categoryElt = document.querySelector('.categorySelect');
     categoryElt.innerHTML="";
     var filterCategories = categories.filter(category => category.id !== BUTTON_ALL_ID )
@@ -456,7 +458,7 @@ function refreshPreview() {
   * Update the list of works and refresh the display
   * @param {*} work New work to add in the list works
   */
-function updateWorksList(work, works){
+function updateWorksList(work){
     // Update the list of works
     works.push(work);
 
