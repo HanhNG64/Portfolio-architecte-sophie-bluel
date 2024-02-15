@@ -48,7 +48,7 @@
 				<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc" style="display: none;">
 					<div class="delete-modal-wrapper modal-stop">
 						<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
-						<h1 id="modal-title">Galerie photo</h1>
+						<h3>Galerie photo</h3>
 						<div class="modal-gallery" id="delete-dialog-desc"></div>
 						<hr>
 						<button class="btn-add">Ajouter une photo</button>
@@ -58,21 +58,24 @@
 					<div class="add-modal-wrapper modal-stop">
 						<img src="./assets/icons/arrow-left.png" alt="group" class="modal-previous">
 						<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
-						<h1 id="modal-title">Ajout photo</h1>
-						<form action="#" method="post" id="data-form"> <!--novalidate-->
-							<img class="preview"></img>
-							<div class="loadImage">
-								<input type="file" id="file" name="file" accept="image/png, image/jpg" />
-								<label for="file">jpg,png : 4mo max</label>
+						<h3>Ajout photo</h3>
+						<form action="#" method="post" id="data-form"> 
+							<div class="preview-input">
+								<img class="preview"></img>
+								<div class="loadImage">
+									<img src="./assets/icons/picture-svgrepo-com 1.png" alt="picture-svgrepo-com" class="picture-svgrepo">
+									<label for="file" class="file-label">+ Ajouter photo</label>
+									<input type="file" id="file" name="file" accept="image/png, image/jpg" />
+									<label>jpg, png : 4mo max</label>
+								</div>
 							</div>
-							<label for="title">Titre</label>
-							<input type="text" name="title" id="title"/><!--required-->
-							<label for="category">Catégorie</label>
+							<label for="title" class="title-label">Titre</label>
+							<input type="text" name="title" id="title"/>
+							<label for="category" class="category-label">Catégorie</label>
 							<select name="categorySelect" id="categorySelect" class="categorySelect">
 							</select>
-							<p class="add-modal-error"></p>
 							<hr>
-							<button class="btn-validate">Valider</button>
+							<button class="btn-validate" disabled>Valider</button>
 						</form>
 					</div>
 				</aside>

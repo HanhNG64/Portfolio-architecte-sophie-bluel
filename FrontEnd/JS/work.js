@@ -296,6 +296,8 @@ function opendAddModal(event) {
     modal.querySelector('.modal-stop').addEventListener('click',stopPropagation);
     document.getElementById("data-form").addEventListener('submit', addWork);
     document.querySelector('input[type=file]').addEventListener('change', refreshPreview);
+    document.querySelector('[name=title]').addEventListener('keyup', validateWork);
+    document.querySelector('[name=categorySelect]').addEventListener('change', validateWork);
 
     addModal = modal;
     currentModal = addModal;
@@ -311,15 +313,6 @@ function opendAddModal(event) {
 async function addWork(event){
     event.preventDefault();
     try {
-        //Validate 
-        if(!validateWork(event)) {
-            var errorElt = document.querySelector(".add-modal-error");
-            errorElt.style.display = "block";
-            errorElt.innerHTML = "Les conditions ne sont pas requises.";
-            errorElt.className = "add-modal-error active";
-            return;
-        }
-
         // Add a work in the API 
         var data = buildFormData(event);
         const work = await postWork(data);
@@ -352,6 +345,9 @@ function closeModal(event){
     currentModal.removeEventListener('click', closeModal);
     currentModal.querySelector('.modal-close').removeEventListener('click', closeModal);
     currentModal.querySelector('.modal-stop').removeEventListener('click', stopPropagation);
+    document.querySelector('input[type=file]').removeEventListener('change', refreshPreview);
+    document.querySelector('[name=title]').removeEventListener('keyup', validateWork);
+    document.querySelector('[name=categorySelect]').removeEventListener('change', validateWork);
 
     stopPropagation(event);
 
@@ -424,11 +420,11 @@ function generateWorksInModal() {
 function generateCategoriesOptions() {
     const categoryElt = document.querySelector('.categorySelect');
     categoryElt.innerHTML="";
-    var filterCategories = categories.filter(category => category.id !== BUTTON_ALL_ID )
-    filterCategories.forEach((categorie) => {
+
+    categories.forEach((category) => {
         const option = document.createElement("option");
-        option.value = categorie.id;
-        option.text = categorie.name;
+        option.value = category.id;
+        option.text = category.id === BUTTON_ALL_ID ? " " : category.name;
         categoryElt.appendChild(option);
     });
 }
@@ -456,6 +452,8 @@ function refreshPreview() {
         preview.style.display = "none";
         loadImage.style.display = "flex";
     }
+
+    validateWork();
  }
 
  /**
@@ -502,18 +500,18 @@ function buildFormData(event) {
  * @param {*} event 
  * @returns True if all data is required, false Otherwise
  */
-function validateWork(event) {
-    const image = event.target.querySelector('input[type=file]').files[0];
-    const title = event.target.querySelector('[name=title]').value;
-    const category = event.target.querySelector('[name=categorySelect]').value;
-    
+function validateWork() {
+    const image = document.querySelector('input[type=file]').files[0];
+    const title = document.querySelector('[name=title]').value;
+    const category = Number(document.querySelector('[name=categorySelect]').value);
+ 
     var imageValid = image === undefined ? false : fileSizeMo(image.size) <= 4;// Accept only images less than 4MB
     var extensionValid = image === undefined ? false : IMG_EXT.includes(fileExtension(image));
     var titleValid = title === undefined ? false : TITLE_PATTERN.test(title.trim());  
-    var categoryValid = category !== undefined;  
+    var categoryValid = category !== BUTTON_ALL_ID;  
  
-    console.log("fileExtension(image)"+fileExtension(image)+ "  " + extensionValid);
-    return  titleValid && imageValid && categoryValid && extensionValid;
+    const valid =  titleValid && imageValid && categoryValid && extensionValid;
+    document.querySelector('.btn-validate').disabled = !valid;
 }
 
 /**
