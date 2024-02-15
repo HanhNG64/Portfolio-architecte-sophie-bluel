@@ -16,31 +16,36 @@
   </head>
 
   <body>
-    <header>
-      <h1>Sophie Bluel<span>Architecte d'intérieur</span></h1>
-      <nav>
-        <ul>
-          <li><a href="./index.html">projets</a></li>
-          <li>contact</li>
-          <li class="loginItem">login</li>
-          <li><img src="./assets/icons/instagram.png" alt="Instagram" /></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <section id="login">
-        <h2>Log in</h2>
-        <form action="#" method="post" id="form" novalidate>
-          <label for="email">E-mail</label>
-          <input type="email" name="email" id="email" required/>
-          <label for="pwd">Mot de passe</label>
-          <input type="password" name="pwd" id="pwd" required/>
-          <p class="error"></p>
-          <input type="submit" value="Se connecter" />
-          <p>Mot de passe oublié</p>
-        </form>
-      </section>
-    </main>
+
+    <div class="main-container">
+      <header>
+        <h1>Sophie Bluel<span>Architecte d'intérieur</span></h1>
+        <nav>
+					<ul>
+						<li><a href="#portfolio">projets</a></li>
+						<li><a href="#contact">contact</a></li>
+						<li class="login"><a href="./login.html">login</a></li>
+						<li class="logout">logout</li>
+						<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
+					</ul>
+			  </nav>
+      </header>
+      <main>
+        <section id="login">
+          <h2>Log in</h2>
+          <form action="#" method="post" id="form" novalidate>
+            <label for="email">E-mail</label>
+            <input type="email" name="email" id="email" required/>
+            <label for="pwd">Mot de passe</label>
+            <input type="password" name="pwd" id="pwd" required/>
+            <p class="error"></p>
+            <input type="submit" value="Se connecter" />
+            <p>Mot de passe oublié</p>
+          </form>
+        </section>
+      </main>
+    </div>
+
     <footer>
       <nav>
         <ul>

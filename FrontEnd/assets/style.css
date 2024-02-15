@@ -116,6 +116,21 @@ nav img {
 	width: 22px;
 }
 
+nav ul {
+	display: flex;
+	align-items: center;
+	list-style-type: none;
+}
+
+nav li {
+	padding: 0 10px;
+	font-size: 1.2em;
+}
+
+li:hover {
+	color: #B1663C;
+}
+
 /******* MAIN *******/
 
 main {
@@ -481,19 +496,8 @@ footer nav ul {
 	margin: 2em
 }
 
-nav ul {
-	display: flex;
-	align-items: center;
-	list-style-type: none;
-}
-
-nav li {
-	padding: 0 10px;
-	font-size: 1.2em;
-}
-
-li:hover {
-	color: #B1663C;
+footer nav ul li {
+	font-size: 14px;
 }
 
 /******* CONTACT *******/
