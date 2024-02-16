@@ -127,8 +127,8 @@ nav li {
 	font-size: 1.2em;
 }
 
-li:hover {
-	color: #B1663C;
+a:hover {
+	font-weight: 700;
 }
 
 /******* MAIN *******/
@@ -498,6 +498,10 @@ footer nav ul {
 
 footer nav ul li {
 	font-size: 14px;
+}
+
+li:hover {
+	color: #B1663C;
 }
 
 /******* CONTACT *******/
