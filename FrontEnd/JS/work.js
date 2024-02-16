@@ -2,7 +2,7 @@ const HOST = "http://localhost:5678/api";
 const TOKEN_KEY = "sbtoken";
 const BUTTON_ALL_ID = 0; // ID of the filter button for ALL
 const BUTTON_ALL_NAME = "Tous"; // Name of the filter button for ALL
-const TITLE_PATTERN = /^[a-zA-Z0-9._\séèàç,"#?!@$%^&*;'+-]{3,50}$/; // Regex for image title
+const TITLE_PATTERN = /^[a-zA-Z0-9._\séèàçù,"#?!@$%^&*;'+-]{3,50}$/; // Regex for image title
 const IMG_EXT = ["png", "jpg"]; 
 
 var categorySelectedBtn;
@@ -26,12 +26,21 @@ window.addEventListener('modalClosed', (e) => {
         if(e.detail.currentTarget === addModal || e.detail.currentTarget === addModal.querySelector('.modal-close') ||  e.detail.currentTarget === document.getElementById("data-form")) {
             closeModal(e);
         }
+        else{
+            deleteModal.style.display = "flex";
+        }
 
         // Notify the closure of the modal
         addModal.dispatchEvent(new CustomEvent("modalClosed"));
     }
     else{
         currentModal = null;
+    }
+});
+
+window.addEventListener('modalOpened', (e) => {
+    if(e.detail === addModal ) {
+        deleteModal.style.display = "none";
     }
 });
 
@@ -100,7 +109,13 @@ function updateConnectionMode(){
     edtionModeElt.style.display = editionModeDisplay;
 
     var headerElt = document.querySelector('header');
-    headerElt.style.margin =  isAdminMode ? "38px 0 0 0" : "50px 0";
+    headerElt.style.margin =  isAdminMode ? "38px auto 92px auto" : "50px auto 139px auto";
+
+    var filterElt = document.querySelector('.filter');
+    filterElt.style.display =  isAdminMode ? "none" : "flex";
+
+    var galleryElt = document.querySelector('.gallery');
+    galleryElt.style.paddingTop =  isAdminMode ? "51px" : "0";
 }
 
 /**
@@ -304,6 +319,10 @@ function opendAddModal(event) {
 
     // Build select catetogies options
     generateCategoriesOptions();
+
+    // Notify the opening of the current modal
+    const target = event.target;
+    window.dispatchEvent(new CustomEvent("modalOpened", { detail : modal}));
 }
 
 /**

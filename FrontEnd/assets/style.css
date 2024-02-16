@@ -53,17 +53,14 @@ table {
 	--main-color: #1D6154;
 	--white-color : #FFF;
 	--black-color : #000;
+	--btn-bg-color : #0E2F28;
 }
 
 body {
+	margin: auto;
+    font-family: 'Work Sans';
+    font-size: 14px;
 	background-color: var(--bg-color);
-	font-family: 'Work Sans' ;
-	font-size: 14px;
-}
-
-.main-container {
-	max-width: 1140px;
-	margin:auto;
 }
 
 /******* HEADER *******/
@@ -87,10 +84,10 @@ body {
 }
 
 header {
-	display: flex;
-	justify-content: space-between;
-	margin: 50px 0;
-}
+	max-width: 1140px;
+    display: flex;
+    justify-content: space-between;
+} 
 
 header a {
 	text-decoration: none;
@@ -120,6 +117,7 @@ nav ul {
 	display: flex;
 	align-items: center;
 	list-style-type: none;
+	gap: 44px;
 }
 
 nav li {
@@ -134,7 +132,8 @@ a:hover {
 /******* MAIN *******/
 
 main {
-	margin: 0 95px 0 95px;
+	max-width: 950px;
+	margin: 0 auto;
 }
 
 section {
@@ -261,7 +260,7 @@ h2{
 .delete-modal-wrapper {
 	position: absolute;
 	overflow: auto;
-	top: 601px; 
+	top: 19%;
 	width: 630px;
 	height: 688px;
 	border-radius: 10px;
@@ -336,15 +335,15 @@ hr {
 	width: 237px;
 	height: 36px;
 	border-radius: 60px;
-	border-color: var(--main-color);
 	font-family: "Syne";
-	border: 1px solid var(--main-color);
+	border: 1px solid ;
 	padding: 10px 49px;
+	color:  var(--white-color);
+	background-color: var(--main-color);
 }
 
 .btn-add:hover {
-	background-color: var(--main-color);
-	color:  var(--white-color);
+	background-color: var(--btn-bg-color);
 }
 
 /************ Add modal********/
@@ -363,7 +362,7 @@ hr {
 .add-modal-wrapper {
 	position: absolute;
 	overflow: auto;
-	top: 601px;
+	top: 19%;
 	width: 630px;
 	height: 670px;
 	display: flex;
@@ -424,11 +423,16 @@ hr {
 	width: 173px;
 	height: 36px;
 	font-size: 14px;
-	font-weight: 500px;
+	font-weight: 700;
 	cursor: pointer;
 	border-radius: 50px;
 	color: #306685;
 	background-color: #CBD6DC;
+}
+
+.preview-input .file-label:hover {
+	color: #cbd6dc;
+	background-color: var(--btn-bg-color);
 }
 
 .preview-input input {
@@ -471,29 +475,34 @@ hr {
 	color: var(--white-color);
 }
 
-.btn-validate:enabled {
+.btn-validate:enabled{
 	background-color: var(--main-color);
 	color: var(--white-color);
 }
 
-/******* FOOTER *******/
-
-footer {
-	display: flex;
-	justify-content: end;
-	width: 100%;
-	height: 60px;
-	background-color:  var(--white-color);
+.btn-validate:hover:enabled {
+	background-color: var(--btn-bg-color);
 }
 
+/******* FOOTER *******/
+
+
+footer {
+	width: 100%;
+	background-color: var(--white-color);
+} 
+
 footer nav {
-	display: flex;
+	display: flex; 
+  	justify-self: end;
+	align-items: end;
 }
 
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
-	margin: 2em
+	margin: 2em;
+	width: 100%;
 }
 
 footer nav ul li {
@@ -551,4 +560,8 @@ input[type="submit"]{
 	width: 180px;
 	text-align: center;
 	border-radius: 60px ;
+}
+
+input[type="submit"]:hover {
+	background-color: var(--btn-bg-color);
 }
