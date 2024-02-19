@@ -11,7 +11,7 @@ const ACTION = {
     DELETE : 3,
     UPLOAD_FILE: 4,
     IMAGE_TITLE: 5,
-    CATEGOGY_SELECT: 6,
+    CATEGORY_SELECT: 6,
     OTHER: 10
 }
 const MAP_ERROR = new Map([
@@ -21,7 +21,7 @@ const MAP_ERROR = new Map([
     [ACTION.DELETE, 'Impossible de supprimer le travail.'],
     [ACTION.UPLOAD_FILE, 'Le fichier est trop volumineux ou l\'extension non valide. Taille maximale: 4Mo'],
     [ACTION.IMAGE_TITLE, 'Le titre doit être entre 3 et 50 caractères.'],
-    [ACTION.CATEGOGY_SELECT, 'La catégorie n\'est pas valide.'],
+    [ACTION.CATEGORY_SELECT, 'La catégorie n\'est pas valide.'],
     [ACTION.OTHER, 'Oups']
 ]);
 const CAUSE_ERROR = new Map([
@@ -47,7 +47,7 @@ let categories = [{
     "name": BUTTON_ALL_NAME
 }];
 
-const modeEditing = (() => {
+const editingMode = (() => {
     let mode = MODE.CONSULTATION;
 
     return {
@@ -72,8 +72,8 @@ try {
 }
 finally {
     // Adapt the home page according to the editing mode
-    modeEditing.updateEditing();
-    refreshHomePage(modeEditing.isEditing());
+    editingMode.updateEditing();
+    refreshHomePage(editingMode.isEditing());
 }
 
 /************* FUNCTIONS EXECUTION *************/
@@ -192,7 +192,7 @@ function refreshHomePage(isEditingMode){
  * @param {*} event 
  */
 function logout(event){
-    if(modeEditing.isEditing()) {
+    if(editingMode.isEditing()) {
         // Remove token and refresh the home page
         window.sessionStorage.removeItem(TOKEN_KEY);
         window.location.href = "./index.html";
@@ -686,7 +686,7 @@ function enableValidateButton() {
         new CustomError(ACTION.IMAGE_TITLE).handleError();
     }
     else if(categoryChanged && !categoryValid) {
-        new CustomError(ACTION.CATEGOGY_SELECT).handleError();
+        new CustomError(ACTION.CATEGORY_SELECT).handleError();
     }
     else {
         addModal.querySelector('.message-error').style.display = "none";
