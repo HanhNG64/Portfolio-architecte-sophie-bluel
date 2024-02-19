@@ -12,91 +12,86 @@
 	<script type="module" src="./JS/work.js"></script>
 </head>
 <body>
-	<div class="edition-mode"><img src="./assets/icons/vector.png" alt="group"><span class="text">Mode edition</span></div>
-
-		<header>
-			<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
-			<nav>
-				<ul>
-					<li><a href="#portfolio">projets</a></li>
-					<li><a href="#contact">contact</a></li>
-					<li class="login"><a href="./login.html">login</a></li>
-					<li class="logout"><a href="#">logout</a></li>
-					<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
-				</ul>
-			</nav>
-		</header>
+	<header>
+		<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
+		<nav>
+			<ul>
+				<li><a href="#portfolio">projets</a></li>
+				<li><a href="#contact">contact</a></li>
+				<li><a href="./login.html" class="login">login</a></li>
+				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
+			</ul>
+		</nav>
+	</header>
 		
-		<main>
-			<section id="introduction">
-				<figure>
+	<main>
+		<section id="introduction">
+			<figure>
 					<img src="./assets/images/sophie-bluel.png" alt="">
-				</figure>
-				<article>
-					<h2>Designer d'espace</h2>
-					<p>Je raconte votre histoire, je valorise vos idées. Je vous accompagne de la conception à la livraison finale du chantier.</p>
-					<p>Chaque projet sera étudié en commun, de façon à mettre en valeur les volumes, les matières et les couleurs dans le respect de l’esprit des lieux et le choix adapté des matériaux. Le suivi du chantier sera assuré dans le souci du détail, le respect du planning et du budget.</p>
-					<p>En cas de besoin, une équipe pluridisciplinaire peut-être constituée : architecte DPLG, décorateur(trice)</p>
-				</article>
-			</section>
-			<section id="portfolio">
-				<h2>Mes Projets</h2>
-				<button class="btn-modify"><img src="./assets/icons/group.png" alt="group"><span class="text">modifier</span></button>
-				<div class="filter"></div>
-				<div class="gallery"></div>
-			</section>
-			<section id="contact">
-				<h2>Contact</h2>
-				<p>Vous avez un projet ? Discutons-en !</p>
-				<form action="#" method="post">
-					<label for="name">Nom</label>
-					<input type="text" name="name" id="name">
-					<label for="email">Email</label>
-					<input type="email" name="email" id="email">
-					<label for="message">Message</label>
-					<textarea name="message" id="message" cols="30" rows="10"></textarea>
-					<input type="submit" value="Envoyer">
-				</form>
-			</section>
+			</figure>
+			<article>
+				<h2>Designer d'espace</h2>
+				<p>Je raconte votre histoire, je valorise vos idées. Je vous accompagne de la conception à la livraison finale du chantier.</p>
+				<p>Chaque projet sera étudié en commun, de façon à mettre en valeur les volumes, les matières et les couleurs dans le respect de l’esprit des lieux et le choix adapté des matériaux. Le suivi du chantier sera assuré dans le souci du détail, le respect du planning et du budget.</p>
+				<p>En cas de besoin, une équipe pluridisciplinaire peut-être constituée : architecte DPLG, décorateur(trice)</p>
+			</article>
+		</section>
+		<section id="portfolio">
+			<h2>Mes Projets</h2>
+			<div class="filter"></div>
+			<div class="gallery"></div>
+		</section>
+		<section id="contact">
+			<h2>Contact</h2>
+			<p>Vous avez un projet ? Discutons-en !</p>
+			<form action="#" method="post">
+				<label for="name">Nom</label>
+				<input type="text" name="name" id="name">
+				<label for="email">Email</label>
+				<input type="email" name="email" id="email">
+				<label for="message">Message</label>
+				<textarea name="message" id="message" cols="30" rows="10"></textarea>
+				<input type="submit" value="Envoyer">
+			</form>
+		</section>
 
-			<!-- Delete Modale -->
-			<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc">
-				<div class="delete-modal-wrapper modal-stop">
-					<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
-					<h3>Galerie photo</h3>
-					<div class="modal-gallery" id="delete-dialog-desc"></div>
-					<hr>
-					<button class="btn-add">Ajouter une photo</button>
-				</div>
-			</aside>
+		<!-- Delete Modale -->
+		<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc">
+			<div class="delete-modal-wrapper modal-stop">
+				<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
+				<h3>Galerie photo</h3>
+				<div class="modal-gallery" id="delete-dialog-desc"></div>
+				<hr>
+				<button class="btn-add">Ajouter une photo</button>
+			</div>
+		</aside>
 
-			<!-- Add Modale -->
-			<aside id="add-modal" class="add-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="add-dialog-desc">
-				<div class="add-modal-wrapper modal-stop">
-					<img src="./assets/icons/arrow-left.png" alt="group" class="modal-previous">
-					<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
-					<h3>Ajout photo</h3>
-					<form action="#" method="post" id="data-form"> 
-						<div class="preview-input">
-							<img class="preview"></img>
-							<div class="loadImage">
-								<img src="./assets/icons/picture-svgrepo-com.png" alt="picture-svgrepo-com" class="picture-svgrepo">
-								<label for="file" class="file-label">+ Ajouter photo</label>
-								<input type="file" id="file" name="file" accept="image/png, image/jpg" />
-								<label>jpg, png : 4Mo max</label>
-							</div>
+		<!-- Add Modale -->
+		<aside id="add-modal" class="add-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="add-dialog-desc">
+			<div class="add-modal-wrapper modal-stop">
+				<img src="./assets/icons/arrow-left.png" alt="group" class="modal-previous">
+				<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
+				<h3>Ajout photo</h3>
+				<form action="#" method="post" id="data-form"> 
+					<div class="preview-input">
+						<img class="preview"></img>
+						<div class="loadImage">
+							<img src="./assets/icons/picture-svgrepo-com.png" alt="picture-svgrepo-com" class="picture-svgrepo">
+							<label for="file" class="file-label">+ Ajouter photo</label>
+							<input type="file" id="file" name="file" accept="image/png, image/jpg" />
+							<label>jpg, png : 4Mo max</label>
 						</div>
-						<label for="title" class="title-label">Titre</label>
-						<input type="text" name="title" id="title"/>
-						<label for="category" class="category-label">Catégorie</label>
-						<select name="categorySelect" id="categorySelect" class="categorySelect">
-						</select>
-						<hr>
-						<button class="btn-validate" disabled>Valider</button>
-					</form>
-				</div>
-			</aside>
-
+					</div>
+					<label for="title" class="title-label">Titre</label>
+					<input type="text" name="title" id="title"/>
+					<label for="category" class="category-label">Catégorie</label>
+					<select name="categorySelect" id="categorySelect" class="categorySelect">
+					</select>
+					<hr>
+					<button class="btn-validate" disabled>Valider</button>
+				</form>
+			</div>
+		</aside>
 		</main>
 
 	<footer>

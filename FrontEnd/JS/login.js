@@ -21,7 +21,7 @@ const MAP_LOGIN_ERROR = new Map([
 ]);
 
 const CAUSE_LOGIN_ERROR = new Map([
-  [INPUT_NAME.EMAIL, "Le format d'e-mail non rescpecté."],
+  [INPUT_NAME.EMAIL, "Le format d'e-mail est non valide."],
   [INPUT_NAME.PWD, "Le mot de passe doit avoir au moins une lettre, avec une majuscule, un chiffre, entre 6 et 12 caractères."],
   [401, 'Mot de passe non valide.'],
   [404, 'E-mail non valide.']

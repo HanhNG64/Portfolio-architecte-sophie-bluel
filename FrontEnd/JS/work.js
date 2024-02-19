@@ -83,6 +83,20 @@ finally {
  * @returns 
  */
 async function run() {
+    // Add Mode Edition
+    const editionModeButton = document.createElement("div");
+    editionModeButton.innerHTML = "<div class='edition-mode'><img src='./assets/icons/vector.png' alt='vector'><span class='text'>Mode edition</span></div>";
+    let header = document.querySelector("header");
+    header.parentNode.insertBefore(editionModeButton,header);
+
+    // <li class="logout"><a href="#">logout</a></li>
+
+    // Add the button "modifier" to edit
+    const modifyButton = document.createElement("div");
+    modifyButton.innerHTML = "<button class='btn-modify'><img src='./assets/icons/group.png' alt='group'><span class='text'>modifier</span></button>";
+    let porfolio = document.getElementById("portfolio");
+    porfolio.insertBefore(modifyButton,porfolio.querySelector("h2"));
+
     // Create an element to display the error message
     let homePageErrorElt = document.createElement('p');
     homePageErrorElt.classList.add('message-error');
@@ -138,7 +152,8 @@ async function run() {
     // Initialize listeners
     document.querySelector('.btn-modify').addEventListener('click', openDeleteModal);
     document.querySelector('.btn-add').addEventListener('click', opendAddModal);
-    document.querySelector('.logout').addEventListener('click', logout);
+    document.querySelector('.login').addEventListener('click', logout);
+
     window.addEventListener('newModalOpened', (e) => {
         if(e.detail !== currentModal ) {
             hideModal(e);
@@ -152,21 +167,15 @@ async function run() {
  * @param {*} isEditingMode 
  */
 function refreshHomePage(isEditingMode){
-    var logoutDisplay = isEditingMode ? "block" : "none";
-    var loginDisplay = isEditingMode ? "none" : "block";
-    var editionModeDisplay = isEditingMode ? "flex" : "none";
-
     var loginElt = document.querySelector('.login');
-    loginElt.style.display = loginDisplay;
-
-    var logoutElt = document.querySelector('.logout');
-    logoutElt.style.display = logoutDisplay;
-
+    loginElt.innerText = isEditingMode ? "logout" :"login";
+    loginElt.href =  isEditingMode ? "#" : "./login.html";
+  
     var modifyElt = document.querySelector('.btn-modify');
-    modifyElt.style.display = logoutDisplay;
+    modifyElt.style.display = isEditingMode ? "block" : "none";
 
     var edtionModeElt = document.querySelector('.edition-mode');
-    edtionModeElt.style.display = editionModeDisplay;
+    edtionModeElt.style.display = isEditingMode ? "flex" : "none";
 
     var headerElt = document.querySelector('header');
     headerElt.style.margin =  isEditingMode ? "38px auto 92px auto" : "50px auto 139px auto";
@@ -183,9 +192,11 @@ function refreshHomePage(isEditingMode){
  * @param {*} event 
  */
 function logout(event){
-    // Remove token and refresh the home page
-    window.sessionStorage.removeItem(TOKEN_KEY);
-    refreshHomePage();
+    if(modeEditing.isEditing()) {
+        // Remove token and refresh the home page
+        window.sessionStorage.removeItem(TOKEN_KEY);
+        window.location.href = "./index.html";
+    }
 }
 
 /**************** FUNCTIONS API ***************/
@@ -584,15 +595,27 @@ function stopPropagation(event) {
     event.stopPropagation(); 
 }
 
+/**
+ * Triggered when a file is entered
+ * @param {*} event 
+ */
 function handleFile(event) {
     fileChanged = true;
     refreshPreview(event);
 }
 
+/**
+ * Triggered when the title of work is entered
+ * @param {*} event 
+ */
 function handleImageTitle(event) {
     enableValidateButton();
 }
 
+/**
+ * Triggered when the category is selected
+ * @param {*} event 
+ */
 function handleCategorySelect(event) {
     categoryChanged = true;
     enableValidateButton();
@@ -699,7 +722,7 @@ function getFileExtension(file){
 function unsubscribeListeners() {
     document.querySelector('.btn-modify').addEventListener('click', openDeleteModal);
     document.querySelector('.btn-add').addEventListener('click', opendAddModal);
-    document.querySelector('.logout').addEventListener('click', logout);
+    document.querySelector('.login').addEventListener('click', logout);
 
     // AddModal
     if(addModal) {
