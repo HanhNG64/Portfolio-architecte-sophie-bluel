@@ -5,16 +5,18 @@ const BUTTON_ALL_NAME = "Tous"; // Name of the filter button for ALL
 const TITLE_PATTERN = /^[a-zA-Z0-9._\séèàçù,"#?!@$%^&*;'+-]{3,50}$/; // Regex for image title
 const IMG_EXT = ["png", "jpg"]; 
 const ACTION = {
-    GET:0,
-    POST : 1,
-    DELETE : 2,
+    GET_WORK:0,
+    GET_CATEGORY:1,
+    POST : 2,
+    DELETE : 3,
     OTHER: 4
 }
 const MAP_ERROR = new Map([
-    [ACTION.GET, 'Récupération impossible.'],
-    [ACTION.POST, 'Ajout impossible.'],
-    [ACTION.DELETE, 'Suppression impossible.'],
-    [ACTION.OTHER, 'Oups.']
+    [ACTION.GET_WORK, 'Impossible de récupérer les travaux.'],
+    [ACTION.GET_CATEGORY, 'Impossible de récupérer les catégories.'],
+    [ACTION.POST, 'Impossible d\'ajout le travail.'],
+    [ACTION.DELETE, 'Impossible de supprimer le travail.'],
+    [ACTION.OTHER, 'Oups']
 ]);
 const CAUSE_ERROR = new Map([
     [401, 'Authentification erronée.'],
@@ -49,6 +51,7 @@ const modeEditing = (() => {
     };
 })();
 
+// Unsubscribe all listeners before unload
 window.addEventListener('beforeunload', (e)=>{
     unsubscribeListeners();
 });
@@ -82,7 +85,7 @@ async function run() {
             error.handleError();
         }
         else {
-            new CustomError(ACTION.GET).handleError();
+            new CustomError(ACTION.GET_WORK).handleError();
             return;
         }
     }
@@ -105,7 +108,7 @@ async function run() {
             error.handleError();
         }
         else {
-            new CustomError(ACTION.GET).handleError();
+            new CustomError(ACTION.GET_CATEGORY).handleError();
             return;
         }
     }
@@ -175,7 +178,6 @@ class CustomError extends Error {
 
         let errorMessage = MAP_ERROR.has(action) ? MAP_ERROR.get(action) + " " : "";
         let cause = CAUSE_ERROR.has(errorStatus) ? CAUSE_ERROR.get(errorStatus) :  "";
-
         this.message  = errorMessage + cause;
     }
 
@@ -197,7 +199,7 @@ class CustomError extends Error {
 async function getWorks() {
     const reponse = await fetch(HOST+"/works");
     if(!reponse.ok){
-        throw new CustomError(ACTION.GET,reponse.status);
+        throw new CustomError(ACTION.GET_WORK,reponse.status);
     }
     return reponse.json();
 }
@@ -298,7 +300,7 @@ async function removeWork(event) {
 async function getCategories(){
     const reponse = await fetch(HOST+"/categories");
     if(!reponse.ok) {
-        throw new CustomError(ACTION.GET,reponse.status);
+        throw new CustomError(ACTION.GET_CATEGORY,reponse.status);
     }
 
     return reponse.json();
