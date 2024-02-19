@@ -14,7 +14,6 @@
 <body>
 	<div class="edition-mode"><img src="./assets/icons/vector.png" alt="group"><span class="text">Mode edition</span></div>
 
-	<!-- <div class="main-container"> -->
 		<header>
 			<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 			<nav>
@@ -43,42 +42,9 @@
 			<section id="portfolio">
 				<h2>Mes Projets</h2>
 				<button class="btn-modify"><img src="./assets/icons/group.png" alt="group"><span class="text">modifier</span></button>
+				<p class="message-error"></p>
 				<div class="filter"></div>
 				<div class="gallery"></div>
-				<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc" style="display: none;">
-					<div class="delete-modal-wrapper modal-stop">
-						<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
-						<h3>Galerie photo</h3>
-						<div class="modal-gallery" id="delete-dialog-desc"></div>
-						<hr>
-						<button class="btn-add">Ajouter une photo</button>
-					</div>
-				</aside>
-				<aside id="add-modal" class="add-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="add-dialog-desc" style="display: none;">
-					<div class="add-modal-wrapper modal-stop">
-						<img src="./assets/icons/arrow-left.png" alt="group" class="modal-previous">
-						<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
-						<h3>Ajout photo</h3>
-						<form action="#" method="post" id="data-form"> 
-							<div class="preview-input">
-								<img class="preview"></img>
-								<div class="loadImage">
-									<img src="./assets/icons/picture-svgrepo-com.png" alt="picture-svgrepo-com" class="picture-svgrepo">
-									<label for="file" class="file-label">+ Ajouter photo</label>
-									<input type="file" id="file" name="file" accept="image/png, image/jpg" />
-									<label>jpg, png : 4mo max</label>
-								</div>
-							</div>
-							<label for="title" class="title-label">Titre</label>
-							<input type="text" name="title" id="title"/>
-							<label for="category" class="category-label">Catégorie</label>
-							<select name="categorySelect" id="categorySelect" class="categorySelect">
-							</select>
-							<hr>
-							<button class="btn-validate" disabled>Valider</button>
-						</form>
-					</div>
-				</aside>
 			</section>
 			<section id="contact">
 				<h2>Contact</h2>
@@ -93,8 +59,48 @@
 					<input type="submit" value="Envoyer">
 				</form>
 			</section>
+
+			<!-- Delete Modale -->
+			<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc" style="display: none;">
+				<div class="delete-modal-wrapper modal-stop">
+					<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
+					<h3>Galerie photo</h3>
+					<p class="message-error"></p>
+					<div class="modal-gallery" id="delete-dialog-desc"></div>
+					<hr>
+					<button class="btn-add">Ajouter une photo</button>
+				</div>
+			</aside>
+
+			<!-- Add Modale -->
+			<aside id="add-modal" class="add-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="add-dialog-desc" style="display: none;">
+				<div class="add-modal-wrapper modal-stop">
+					<img src="./assets/icons/arrow-left.png" alt="group" class="modal-previous">
+					<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
+					<h3>Ajout photo</h3>
+					<p class="message-error"></p>
+					<form action="#" method="post" id="data-form"> 
+						<div class="preview-input">
+							<img class="preview"></img>
+							<div class="loadImage">
+								<img src="./assets/icons/picture-svgrepo-com.png" alt="picture-svgrepo-com" class="picture-svgrepo">
+								<label for="file" class="file-label">+ Ajouter photo</label>
+								<input type="file" id="file" name="file" accept="image/png, image/jpg" />
+								<label>jpg, png : 4mo max</label>
+							</div>
+						</div>
+						<label for="title" class="title-label">Titre</label>
+						<input type="text" name="title" id="title"/>
+						<label for="category" class="category-label">Catégorie</label>
+						<select name="categorySelect" id="categorySelect" class="categorySelect">
+						</select>
+						<hr>
+						<button class="btn-validate" disabled>Valider</button>
+					</form>
+				</div>
+			</aside>
+
 		</main>
-	<!-- </div> -->
 
 	<footer>
 		<nav>

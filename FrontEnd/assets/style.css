@@ -203,6 +203,15 @@ h2{
 	text-decoration: underline;
 }
 
+.message-error.active {
+	margin: 30px;
+	padding: 10px 0;
+	text-align: center;
+	color: red;
+	font-weight: 600;
+	font-size: 20px;
+}
+
 /**** Filtre *****/
 .filter {
 	display: flex;
@@ -279,6 +288,11 @@ h2{
 	font-weight: 400;
 	color: var(--black-color);
 } 
+
+.delete-modal-wrapper .message-error.active {
+	position: absolute; 
+	top: 60px;
+}
 
 .modal-close {
 	position: absolute; 
@@ -382,6 +396,11 @@ hr {
 	border: none;
 	cursor: pointer;
 	background: var(--white-color);
+}
+
+.add-modal-wrapper .message-error.active {
+	position: absolute; 
+	top: 60px;
 }
 
  .add-modal-wrapper form {

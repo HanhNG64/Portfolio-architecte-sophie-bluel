@@ -35,7 +35,7 @@ async function connect(event) {
 
     // Store the token in localStorage
     let token = userLogged.token;
-    window.localStorage.setItem(TOKEN_KEY, token);
+    window.sessionStorage.setItem(TOKEN_KEY, token);
 
     // Redirect to home page
     window.location.href = "../index.html";
