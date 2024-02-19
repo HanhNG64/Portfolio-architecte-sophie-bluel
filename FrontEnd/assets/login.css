@@ -160,7 +160,7 @@ nav li {
 	background-color: var(--btn-bg-color);
 }
 
-#login p {
+#login .pwd-forgot {
   text-align: center;
   text-decoration: underline;
   color: #3D3D3D;
@@ -173,11 +173,9 @@ nav li {
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 	color: var(--white-color);
 	background-color: #900;
-}
-
-.error.active {
-  margin-bottom: 30px;
-  padding: 10px 0;
+	margin-bottom: 30px;
+	padding: 10px 0;
+	text-align: center;
 }
 
 /******* FOOTER *******/

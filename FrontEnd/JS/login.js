@@ -3,33 +3,87 @@ const TOKEN_KEY = "sbtoken";
 const EMAIL_PATTERN =/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/; // Regex for email
 const PW_PATTERN = /^(?=.*[A-z])(?=.*[A-Z])(?=.*[0-9])\S{6,12}$/; // Regex for password : At least one letter, with a capital letter, a number, between 6 and 12 characters.
 
+const INPUT_NAME = {
+  EMAIL:"email",
+  PWD : "pwd",
+  CONNECTION: "connection"
+}
 
-// Add a listener to the form
-const loginForm = document.getElementById("login");
-loginForm.addEventListener("submit", function (event) {
-  // Disable page loading
-  event.preventDefault();
-  connect(event);
+const MAP_PATTERN = new Map([
+  [INPUT_NAME.EMAIL, EMAIL_PATTERN],
+  [INPUT_NAME.PWD, PW_PATTERN]
+]);
+
+const MAP_LOGIN_ERROR = new Map([
+  [INPUT_NAME.EMAIL, 'E-mail non valide.'],
+  [INPUT_NAME.PWD, 'Mot de passe non valide.'],
+  [INPUT_NAME.CONNECTION, 'Connexion impossible.'],
+]);
+
+const CAUSE_LOGIN_ERROR = new Map([
+  [INPUT_NAME.EMAIL, "Le format d'e-mail non rescpecté."],
+  [INPUT_NAME.PWD, "Le mot de passe doit avoir au moins une lettre, avec une majuscule, un chiffre, entre 6 et 12 caractères."],
+  [401, 'Mot de passe erroné.'],
+  [404, 'E-mail non trouvé.']
+]);
+
+// Subscribe listeners
+const form = document.getElementById("login");
+document.getElementById("login").addEventListener("submit", handleLogin);
+form.querySelector('[name=email]').addEventListener('blur', handleValidate);
+form.querySelector('[name=pwd]').addEventListener('blur', handleValidate);
+
+// Create an element to display the error message
+let errorElt = document.createElement('p');
+const submitBtn = document.querySelector("[type=submit]");
+submitBtn.parentNode.insertBefore(errorElt,submitBtn);
+
+// Unsubscribe all listeners before unload
+window.addEventListener('beforeunload', (e)=>{
+   unsubscribeListeners();
 });
 
-
 /********************************** FUNCTIONS ************************** */
+
+/**
+ * The custom error
+ */
+class LoginCustomError extends Error {
+  constructor(action,errorStatus) {
+      super();
+      this.name = "LoginCustomError";
+
+      let errorMessage = MAP_LOGIN_ERROR.has(action) ? MAP_LOGIN_ERROR.get(action) + " " : "";
+      let cause = CAUSE_LOGIN_ERROR.has(errorStatus) ? CAUSE_LOGIN_ERROR.get(errorStatus) :  "";
+
+      this.message  = `${errorMessage} <br> ${cause}`;
+  }
+
+  /**
+   * Error display management
+   */
+  handleError(isValide) {
+      if(isValide) {
+        errorElt.innerHTML = "";
+        errorElt.classList.remove('error');
+      }
+      else {
+        errorElt.innerHTML = this.message;
+        errorElt.classList.add('error');
+      }
+  }
+}
 
 /**
  * Connect the user as Admin
  * @param {*} event 
  * @returns 
  */
-async function connect(event) {
-  try {
-    // Validate the data entered
-    if(!validate(event)){
-        var errorElt = document.querySelector(".error");
-        errorElt.innerHTML = "Nom d'utilisateur ou mot de passe incorrect, veuillez corriger les informations saisies.";
-        errorElt.className = "error active";
-        return;
-    }
+async function handleLogin(event) {
+  // Disable page loading
+  event.preventDefault();
 
+  try {
     // Log the user
     var userLogged = await logIn(event);
 
@@ -40,7 +94,12 @@ async function connect(event) {
     // Redirect to home page
     window.location.href = "../index.html";
   } catch (error) {
-    console.log(error);
+    if(error instanceof LoginCustomError) {
+      error.handleError(false);
+    }
+    else {
+      new LoginCustomError(INPUT_NAME.CONNECTION).handleError(false);
+    }
   }
 }
 
@@ -51,26 +110,18 @@ async function connect(event) {
  */
 async function logIn(user) {  
     var userToLog = buildUser(user);
-    // Log the user
-    try {
-        const reponse = await fetch(HOST+"/users/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userToLog)
-        });
+    const reponse = await fetch(HOST+"/users/login", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json" },
+          body: JSON.stringify(userToLog)
+    });
 
-        if (!reponse.ok) {
-            throw new Error(`Login Erreur : ${reponse.status}`);
-        }
-
-        return reponse.json();
-    } catch (error) {
-        // Display an error message
-        var errorElt = document.querySelector(".error");
-        errorElt.innerHTML = "Identifiant invalide.";
-        errorElt.className = "error active";
-        throw error;
+    if (!reponse.ok) {
+      throw  new LoginCustomError(INPUT_NAME.CONNECTION,reponse.status);
     }
+
+    return reponse.json();
 }
 
 /**
@@ -88,16 +139,25 @@ function buildUser(event) {
 }
 
 /**
- * Validate user 
+ * Validate the entry 
  * @param {*} event 
- * @returns True if all data is required, false Otherwise
  */
-function validate(event) {
-  var email = event.target.querySelector("[name=email]").value;
-  var password = event.target.querySelector("[name=pwd]").value;
+function handleValidate(event) {
+  const input =  event.target;
+  const pattern = MAP_PATTERN.get(input.name);
+  const value =  input.value.trim();
+  const isValide = (value.length === 0 ? true :  pattern.test(value));  
 
-  var emailValid = email === undefined ? false :  EMAIL_PATTERN.test(email.trim());  
-  var pwValid = password === undefined ? false : PW_PATTERN.test(password.trim());  
+  new LoginCustomError(input.name, input.name).handleError(isValide);
+}
 
-  return  emailValid && pwValid;
+/**
+ * Unsubscribe all listeners
+ */
+function unsubscribeListeners() {
+  console.log("BYE unsubscribeListeners");
+  const form = document.getElementById("login");
+  document.getElementById("login").removeEventListener("submit", handleLogin);
+  form.querySelector('[name=email]').removeEventListener('blur', handleValidate);
+  form.querySelector('[name=pwd]').removeEventListener('blur', handleValidate);
 }
