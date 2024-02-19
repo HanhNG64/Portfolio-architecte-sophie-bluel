@@ -203,14 +203,16 @@ h2{
 	text-decoration: underline;
 }
 
-.message-error.active {
+.message-error {
+	position: absolute;
+	top: 50px;
 	margin: 30px;
 	padding: 10px 0;
 	text-align: center;
 	color: red;
 	font-weight: 600;
 	font-size: 20px;
-}
+} 
 
 /**** Filtre *****/
 .filter {

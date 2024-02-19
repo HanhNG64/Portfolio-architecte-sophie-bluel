@@ -9,13 +9,19 @@ const ACTION = {
     GET_CATEGORY:1,
     POST : 2,
     DELETE : 3,
-    OTHER: 4
+    UPLOAD_FILE: 4,
+    IMAGE_TITLE: 5,
+    CATEGOGY_SELECT: 6,
+    OTHER: 10
 }
 const MAP_ERROR = new Map([
     [ACTION.GET_WORK, 'Impossible de récupérer les travaux.'],
     [ACTION.GET_CATEGORY, 'Impossible de récupérer les catégories.'],
-    [ACTION.POST, 'Impossible d\'ajout le travail.'],
+    [ACTION.POST, 'Impossible d\'ajouter le travail.'],
     [ACTION.DELETE, 'Impossible de supprimer le travail.'],
+    [ACTION.UPLOAD_FILE, 'Le fichier est trop volumineux ou l\'extension non valide. Taille maximale: 4Mo'],
+    [ACTION.IMAGE_TITLE, 'Le titre doit être entre 3 et 50 caractères.'],
+    [ACTION.CATEGOGY_SELECT, 'La catégorie n\'est pas valide.'],
     [ACTION.OTHER, 'Oups']
 ]);
 const CAUSE_ERROR = new Map([
@@ -27,13 +33,15 @@ const MODE = {
     EDITING : 1
 }
 
-var categorySelectedBtn;
-var currentModal;
-var deleteModal;
-var addModal;
+let currentCategoryFilter;
+let currentModal;
+let deleteModal;
+let addModal;
+let fileChanged = false;  // Flag indicates that the user has already changed the file at least one
+let categoryChanged = false; // Flag indicates that the user has already changed the options at least one
 
-var works = [];
-var categories = [{
+let works = [];
+let categories = [{
     // Catégorie pour Tous
     "id": BUTTON_ALL_ID,
     "name": BUTTON_ALL_NAME
@@ -75,6 +83,20 @@ finally {
  * @returns 
  */
 async function run() {
+    // Create an element to display the error message
+    let homePageErrorElt = document.createElement('p');
+    homePageErrorElt.classList.add('message-error');
+    const filterElt = document.querySelector('.filter');
+    filterElt.parentNode.insertBefore(homePageErrorElt,filterElt);
+
+    let addModalErrorElt = document.createElement('p');
+    const formElt = document.getElementById("data-form");
+    formElt.parentNode.insertBefore(addModalErrorElt,formElt);
+
+    // Hide modals
+    document.querySelector('.add-modal').style.display = "none";
+    document.querySelector('.delete-modal').style.display = "none";
+
     // Get and display works from API
     try {
         works = await getWorks();
@@ -97,10 +119,10 @@ async function run() {
 
         // Apply default filter
         const categorie = categories.filter(categorie=> categorie.id === BUTTON_ALL_ID).shift();
-        if(categorie && categorySelectedBtn === undefined) {
+        if(categorie && currentCategoryFilter === undefined) {
             const btn = document.getElementById(categorie.id);
             btn.classList.add("selected");
-            categorySelectedBtn = btn;
+            currentCategoryFilter = btn;
         }
     }
     catch(error) {
@@ -117,8 +139,8 @@ async function run() {
     document.querySelector('.btn-modify').addEventListener('click', openDeleteModal);
     document.querySelector('.btn-add').addEventListener('click', opendAddModal);
     document.querySelector('.logout').addEventListener('click', logout);
-    window.addEventListener('modalOpened', (e) => {
-        if(e.detail === addModal ) {
+    window.addEventListener('newModalOpened', (e) => {
+        if(e.detail !== currentModal ) {
             hideModal(e);
         }
     });
@@ -188,7 +210,7 @@ class CustomError extends Error {
         const page = currentModal ? currentModal : document;
         const errorElt = page.querySelector('.message-error');
         errorElt.innerHTML = this.message;
-        errorElt.className = "message-error active"; 
+        errorElt.style.display = "block";
     }
 }
 
@@ -197,7 +219,7 @@ class CustomError extends Error {
  * @returns Return works
  */
 async function getWorks() {
-    const reponse = await fetch(HOST+"/works");
+    const reponse = await fetch(`${HOST}/works`);
     if(!reponse.ok){
         throw new CustomError(ACTION.GET_WORK,reponse.status);
     }
@@ -210,7 +232,7 @@ async function getWorks() {
  * @returns 
  */
 async function postWork(work) {
-    const reponse = await fetch(HOST+"/works", {
+    const reponse = await fetch(`${HOST}/works`, {
         method: "POST",
         headers: { 
             authorization : `Bearer ${window.sessionStorage.getItem(TOKEN_KEY)}`},
@@ -229,11 +251,9 @@ async function postWork(work) {
  * @returns 
  */
 async function deleteWork(workId){
-    var storedToken =  window.sessionStorage.getItem(TOKEN_KEY);
-
-    const reponse = await fetch(`http://localhost:5678/api/works/${workId}`, {
+    const reponse = await fetch(`${HOST}/works/${workId}`, {
             method: "DELETE",
-            headers: {  authorization : `Bearer ${storedToken}` }
+            headers: {  authorization : `Bearer ${window.sessionStorage.getItem(TOKEN_KEY)}` }
     });
 
     if(!reponse.ok){
@@ -281,8 +301,8 @@ async function removeWork(event) {
         works = works.filter(work => work.id!==workId);
     
         // Update the display
-        document.querySelectorAll(".work"+workId).forEach(work=> work.remove());
         unsubscribeTrashButton(workId);
+        document.querySelectorAll(".work"+workId).forEach(work=> work.remove());
     } catch (error) {
         if(error instanceof CustomError) {
             error.handleError();
@@ -298,7 +318,7 @@ async function removeWork(event) {
  * @returns Return categories
  */
 async function getCategories(){
-    const reponse = await fetch(HOST+"/categories");
+    const reponse = await fetch(`${HOST}/categories`);
     if(!reponse.ok) {
         throw new CustomError(ACTION.GET_CATEGORY,reponse.status);
     }
@@ -434,15 +454,15 @@ function handleFilter(event) {
     btn.classList.add("selected");
     filter(Number(btn.id));
 
-    if(categorySelectedBtn) categorySelectedBtn.classList.remove("selected");
-    categorySelectedBtn = btn;    
+    if(currentCategoryFilter) currentCategoryFilter.classList.remove("selected");
+    currentCategoryFilter = btn;    
 
     function filter(categorieId) {
-    if(works.length) {
-        var filterWorks = categorieId === BUTTON_ALL_ID ? works :  works.filter(work => categorieId === work.categoryId);
-        generateGalleryNode(filterWorks);
+        if(works.length) {
+            var filterWorks = categorieId === BUTTON_ALL_ID ? works :  works.filter(work => categorieId === work.categoryId);
+            generateGalleryNode(filterWorks);
+        }
     }
-}
 }
 
 /*********** FUNCTIONS MODAL ************** */
@@ -455,33 +475,40 @@ function opendAddModal(event) {
     event.preventDefault();
 
     const modal = document.querySelector('.add-modal');
-    modal.style.display = null;
+    modal.style.display = "flex";
     modal.removeAttribute('aria-hidden');
     modal.setAttribute('aria-modal',true);
 
     if(addModal === undefined) {
+        // Create an element to display the error message
+        let addModalErrorElt = document.createElement('p');
+        addModalErrorElt.classList.add('message-error');
+        const formModalElt = document.getElementById("data-form");
+        formModalElt.parentNode.insertBefore(addModalErrorElt,formModalElt);
+
         modal.addEventListener('click', hideModal);
         modal.querySelector('.modal-previous').addEventListener('click', previousModal);
         modal.querySelector('.modal-close').addEventListener('click', hideModal);
         modal.querySelector('.modal-stop').addEventListener('click',stopPropagation);
         document.getElementById("data-form").addEventListener('submit', addWork);
-        document.getElementById("data-form").addEventListener('submit', addWork);
-        document.querySelector('input[type=file]').addEventListener('change', refreshPreview);
-        document.querySelector('[name=title]').addEventListener('keyup', validateWork);
-        document.querySelector('[name=categorySelect]').addEventListener('change', validateWork);
+        document.querySelector('input[type=file]').addEventListener('change', handleFile);
+        document.querySelector('[name=title]').addEventListener('keyup', handleImageTitle);
+        document.querySelector('[name=categorySelect]').addEventListener('change', handleCategorySelect);
+
+        // Build select categories options
+        buildCategoriesOptions();
 
         addModal = modal;
     }
+    //hide error message
+    modal.querySelector('.message-error').style.display = "none";
 
+    fileChanged = false;
     document.getElementById("data-form").reset();
-    refreshPreview();
-
-    // Build select categories options
-    buildCategoriesOptions();
+    refreshPreview(event);
 
     // Notify the opening of the current modal
-    const target = event.target;
-    window.dispatchEvent(new CustomEvent("modalOpened", { detail : modal}));
+    window.dispatchEvent(new CustomEvent("newModalOpened", { detail : modal}));
 
     currentModal = addModal;
 }
@@ -494,24 +521,40 @@ function openDeleteModal(event) {
     event.preventDefault();
 
     const modal = document.querySelector('.delete-modal');
-    modal.style.display = null;
+    modal.style.display = "flex";
     modal.removeAttribute('aria-hidden');
     modal.setAttribute('aria-modal',true);
 
-    if(deleteModal === undefined) {
+    if(deleteModal === undefined) {   
+        // Create an element to display the error message
+        let deletModalErrorElt = document.createElement('p');
+        deletModalErrorElt.classList.add('message-error');
+        const galleryModalElt = document.querySelector('.modal-gallery');
+        galleryModalElt.parentNode.insertBefore(deletModalErrorElt,galleryModalElt);
+
         modal.addEventListener('click', hideModal);
-        modal.querySelector('.modal-close').addEventListener('click',  hideModal);
-        modal.querySelector('.modal-stop').addEventListener('click',stopPropagation);
+        modal.querySelector('.modal-close').addEventListener('click', hideModal);
+        modal.querySelector('.modal-stop').addEventListener('click', stopPropagation);
 
         deleteModal = modal;
+
+        // Display works in the modal
+        generateDeleteGalleryNode();
     }
+    //hide error message
+    modal.querySelector('.message-error').style.display = "none";
+
+    // Notify the opening of the current modal
+    window.dispatchEvent(new CustomEvent("newModalOpened", { detail : modal}));
 
     currentModal = deleteModal;
-
-    // Display works in the modal
-    generateDeleteGalleryNode();
 }
 
+/**
+ * Hide the current modal
+ * @param {*} event 
+ * @returns 
+ */
 function hideModal(event) {
     event.preventDefault();
 
@@ -520,11 +563,14 @@ function hideModal(event) {
     currentModal.style.display = "none";
     currentModal.setAttribute('aria-hidden',true);
     currentModal.removeAttribute('aria-modal');
-    currentModal.querySelector('.message-error').innerHTML = "";
 
     stopPropagation(event);
 }
 
+/**
+ * Open the previous modal
+ * @param {*} event 
+ */
 function previousModal(event) {
     hideModal(event);
     openDeleteModal(event);
@@ -538,10 +584,24 @@ function stopPropagation(event) {
     event.stopPropagation(); 
 }
 
+function handleFile(event) {
+    fileChanged = true;
+    refreshPreview(event);
+}
+
+function handleImageTitle(event) {
+    enableValidateButton();
+}
+
+function handleCategorySelect(event) {
+    categoryChanged = true;
+    enableValidateButton();
+}
+
 /**
  * Refresh the preview of new work
  */
-function refreshPreview() {
+function refreshPreview(event) {
     var file = document.querySelector('input[type=file]').files[0];
 
     var preview = document.querySelector('.preview');
@@ -562,7 +622,7 @@ function refreshPreview() {
         loadImage.style.display = "flex";
     }
 
-    validateWork();
+    enableValidateButton();
 }
 
 /**
@@ -584,11 +644,9 @@ function buildFormData(event) {
 }
 
 /**
- * Valid new work to add
- * @param {*} event 
- * @returns True if all data is required, false Otherwise
+ * Validate input and enable or disable the validate button
  */
-function validateWork() {
+function enableValidateButton() {
     const image = document.querySelector('input[type=file]').files[0];
     const title = document.querySelector('[name=title]').value;
     const category = Number(document.querySelector('[name=categorySelect]').value);
@@ -598,9 +656,23 @@ function validateWork() {
     var titleValid = title === undefined ? false : TITLE_PATTERN.test(title.trim());  
     var categoryValid = category !== BUTTON_ALL_ID;  
  
+    if(fileChanged && (!imageValid || !extensionValid)) {
+        new CustomError(ACTION.UPLOAD_FILE).handleError();
+    }
+    else if(title.trim().length > 0 && !titleValid) {
+        new CustomError(ACTION.IMAGE_TITLE).handleError();
+    }
+    else if(categoryChanged && !categoryValid) {
+        new CustomError(ACTION.CATEGOGY_SELECT).handleError();
+    }
+    else {
+        addModal.querySelector('.message-error').style.display = "none";
+    }
+
     const valid =  titleValid && imageValid && categoryValid && extensionValid;
     document.querySelector('.btn-validate').disabled = !valid;
 }
+
 
 /**
  * Convert file size to Mo
@@ -637,16 +709,16 @@ function unsubscribeListeners() {
         addModal.querySelector('.modal-stop').removeEventListener('click',stopPropagation);
         document.getElementById("data-form").removeEventListener('submit', addWork);
         document.getElementById("data-form").removeEventListener('submit', addWork);
-        document.querySelector('input[type=file]').removeEventListener('change', refreshPreview);
-        document.querySelector('[name=title]').removeEventListener('keyup', validateWork);
-        document.querySelector('[name=categorySelect]').removeEventListener('change', validateWork);
+        document.querySelector('input[type=file]').removeEventListener('change', handleFile);
+        document.querySelector('[name=title]').removeEventListener('keyup', handleImageTitle);
+        document.querySelector('[name=categorySelect]').removeEventListener('change', handleCategorySelect);
     }
 
     //DeleteModal
     if(deleteModal) {
-        deleteModal.addEventListener('click', hideModal);
-        deleteModal.querySelector('.modal-close').addEventListener('click',  hideModal);
-        deleteModal.querySelector('.modal-stop').addEventListener('click',stopPropagation);
+        deleteModal.removeEventListener('click', hideModal);
+        deleteModal.querySelector('.modal-close').removeEventListener('click',  hideModal);
+        deleteModal.querySelector('.modal-stop').removeEventListener('click',stopPropagation);
     }
 
     // Unsubscribe filter buttons

@@ -42,7 +42,6 @@
 			<section id="portfolio">
 				<h2>Mes Projets</h2>
 				<button class="btn-modify"><img src="./assets/icons/group.png" alt="group"><span class="text">modifier</span></button>
-				<p class="message-error"></p>
 				<div class="filter"></div>
 				<div class="gallery"></div>
 			</section>
@@ -61,11 +60,10 @@
 			</section>
 
 			<!-- Delete Modale -->
-			<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc" style="display: none;">
+			<aside id="delete-modal" class="delete-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="delete-dialog-desc">
 				<div class="delete-modal-wrapper modal-stop">
 					<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
 					<h3>Galerie photo</h3>
-					<p class="message-error"></p>
 					<div class="modal-gallery" id="delete-dialog-desc"></div>
 					<hr>
 					<button class="btn-add">Ajouter une photo</button>
@@ -73,12 +71,11 @@
 			</aside>
 
 			<!-- Add Modale -->
-			<aside id="add-modal" class="add-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="add-dialog-desc" style="display: none;">
+			<aside id="add-modal" class="add-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-title"  aria-describedby="add-dialog-desc">
 				<div class="add-modal-wrapper modal-stop">
 					<img src="./assets/icons/arrow-left.png" alt="group" class="modal-previous">
 					<img src="./assets/icons/xmark.png" alt="group" class="modal-close">
 					<h3>Ajout photo</h3>
-					<p class="message-error"></p>
 					<form action="#" method="post" id="data-form"> 
 						<div class="preview-input">
 							<img class="preview"></img>
@@ -86,7 +83,7 @@
 								<img src="./assets/icons/picture-svgrepo-com.png" alt="picture-svgrepo-com" class="picture-svgrepo">
 								<label for="file" class="file-label">+ Ajouter photo</label>
 								<input type="file" id="file" name="file" accept="image/png, image/jpg" />
-								<label>jpg, png : 4mo max</label>
+								<label>jpg, png : 4Mo max</label>
 							</div>
 						</div>
 						<label for="title" class="title-label">Titre</label>
