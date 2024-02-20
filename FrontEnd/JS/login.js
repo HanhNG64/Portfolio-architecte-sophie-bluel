@@ -15,23 +15,20 @@ const MAP_PATTERN = new Map([
 ]);
 
 const MAP_LOGIN_ERROR = new Map([
-  [INPUT_NAME.EMAIL, 'E-mail non valide.'],
+  [INPUT_NAME.EMAIL, 'Email non valide.'],
   [INPUT_NAME.PWD, 'Mot de passe non valide.'],
   [INPUT_NAME.CONNECTION, 'Connexion impossible.'],
 ]);
 
 const CAUSE_LOGIN_ERROR = new Map([
-  [INPUT_NAME.EMAIL, "Le format d'e-mail est non valide."],
+  [INPUT_NAME.EMAIL, "Le format d'email n'est pas valide."],
   [INPUT_NAME.PWD, "Le mot de passe doit avoir au moins une lettre, avec une majuscule, un chiffre, entre 6 et 12 caractères."],
   [401, 'Mot de passe non valide.'],
-  [404, 'E-mail non valide.']
+  [404, 'Email non valide.']
 ]);
 
 // Subscribe listeners
-const form = document.getElementById("login");
-form.addEventListener("submit", handleLogin);
-form.querySelector('[name=email]').addEventListener('blur', handleInformation);
-form.querySelector('[name=pwd]').addEventListener('blur', handleInformation);
+document.getElementById("login").addEventListener("submit", handleLogin);
 
 // Create an element to display the error message
 let errorElt = document.createElement('p');
@@ -66,12 +63,17 @@ async function handleLogin(event) {
   event.preventDefault();
 
   try {
+
+    // Validate informations 
+    if(!validate(event)){
+      return;
+    }
+
     // Log the user
     var userLogged = await logIn(event);
 
     // Store the token in localStorage
-    let token = userLogged.token;
-    window.sessionStorage.setItem(TOKEN_KEY, token);
+    window.sessionStorage.setItem(TOKEN_KEY, userLogged.token);
 
     // Redirect to home page
     window.location.href = "../index.html";
@@ -81,23 +83,26 @@ async function handleLogin(event) {
 }
 
 /**
- * Triggered when a pwd or email changed
+ * Validate pwd and email 
+ * 
  * @param {*} event 
+ * @returns True if all data is correct, false Otherwise
  */
-function handleInformation(event) {
-  const input =  event.target;
-  const pattern = MAP_PATTERN.get(input.name);
-  const value =  input.value.trim();
-  const isValide = (value.length === 0 ? true :  pattern.test(value));  
+function validate(event) {
+  var email = event.target.querySelector("[name=email]").value;
+  var password = event.target.querySelector("[name=pwd]").value;
 
-  if(!isValide) {
-    errorElt.innerHTML =  `${MAP_LOGIN_ERROR.get(input.name)}  <br> ${CAUSE_LOGIN_ERROR.get(input.name)}`;
-    errorElt.classList.add('error');
+  var emailValid = email === undefined ? false :  EMAIL_PATTERN.test(email.trim());  
+  var pwValid = password === undefined ? false : PW_PATTERN.test(password.trim());  
+
+  if(!emailValid) {
+    manageError( new Error(INPUT_NAME.EMAIL,{ cause: INPUT_NAME.EMAIL }));
   }
-  else {
-    errorElt.innerHTML = "";
-    errorElt.classList.remove('error');
+  else if(!pwValid){
+    manageError( new Error(INPUT_NAME.PWD,{ cause: INPUT_NAME.PWD }));
   }
+
+  return  emailValid && pwValid;
 }
 
 /**
@@ -139,8 +144,5 @@ function buildUser(event) {
  * Unsubscribe all listeners
  */
 function unsubscribeListeners() {
-  const form = document.getElementById("login");
-  form.removeEventListener("submit", handleLogin);
-  form.querySelector('[name=email]').removeEventListener('blur', handleInformation);
-  form.querySelector('[name=pwd]').removeEventListener('blur', handleInformation);
+  document.getElementById("login").removeEventListener("submit", handleLogin);
 }
