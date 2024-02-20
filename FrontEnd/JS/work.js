@@ -240,7 +240,7 @@ async function postWork(work) {
  * @returns 
  */
 async function deleteWork(workId){
-    const reponse = await fetch(`${HOST}/worksr/${workId}`, {
+    const reponse = await fetch(`${HOST}/works/${workId}`, {
             method: "DELETE",
             headers: {  authorization : `Bearer ${window.sessionStorage.getItem(TOKEN_KEY)}` }
     });
@@ -297,7 +297,7 @@ async function removeWork(event) {
  * @returns Return categories
  */
 async function getCategories(){
-    const reponse = await fetch(`${HOST}/categoriesd`);
+    const reponse = await fetch(`${HOST}/categories`);
     if(!reponse.ok) {
         throw new Error(ACTION.GET_CATEGORY,{ cause: reponse.status });
     }
