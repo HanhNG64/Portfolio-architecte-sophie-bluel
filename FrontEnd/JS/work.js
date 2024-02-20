@@ -5,23 +5,25 @@ const BUTTON_ALL_NAME = "Tous"; // Name of the filter button for ALL
 const TITLE_PATTERN = /^[a-zA-Z0-9._\séèàçù,"#?!@$%^&*;'+-]{3,50}$/; // Regex for image title
 const IMG_EXT = ["png", "jpg"]; 
 const ACTION = {
-    GET_WORK:0,
-    GET_CATEGORY:1,
-    POST : 2,
-    DELETE : 3,
-    UPLOAD_FILE: 4,
-    IMAGE_TITLE: 5,
-    CATEGORY_SELECT: 6,
-    OTHER: 10
+    GET_WORK:"0",
+    GET_CATEGORY:"1",
+    POST : "2",
+    DELETE : "3",
+    UPLOAD_FILE: "4",
+    IMAGE_TITLE: "5",
+    CATEGORY_SELECT: "6",
+    CONNECTION: "7",
+    OTHER: "10"
 }
 const MAP_ERROR = new Map([
     [ACTION.GET_WORK, 'Impossible de récupérer les travaux.'],
     [ACTION.GET_CATEGORY, 'Impossible de récupérer les catégories.'],
     [ACTION.POST, 'Impossible d\'ajouter le travail.'],
     [ACTION.DELETE, 'Impossible de supprimer le travail.'],
-    [ACTION.UPLOAD_FILE, 'Le fichier est trop volumineux ou l\'extension non valide. Taille maximale: 4Mo'],
+    [ACTION.UPLOAD_FILE, 'Le fichier est trop volumineux ou l\'extension non valide. <br>Taille maximale: 4Mo'],
     [ACTION.IMAGE_TITLE, 'Le titre doit être entre 3 et 50 caractères.'],
     [ACTION.CATEGORY_SELECT, 'La catégorie n\'est pas valide.'],
+    [ACTION.CONNECTION, 'Connexion impossible.'],
     [ACTION.OTHER, 'Oups']
 ]);
 const CAUSE_ERROR = new Map([
@@ -68,7 +70,7 @@ window.addEventListener('beforeunload', (e)=>{
 try {
     run();
 } catch(error){
-    new CustomError(ACTION.OTHER).handleError();
+    manageError(new Error(ACTION.OTHER));
 }
 finally {
     // Adapt the home page according to the editing mode
@@ -88,8 +90,6 @@ async function run() {
     editionModeButton.innerHTML = "<div class='edition-mode'><img src='./assets/icons/vector.png' alt='vector'><span class='text'>Mode edition</span></div>";
     let header = document.querySelector("header");
     header.parentNode.insertBefore(editionModeButton,header);
-
-    // <li class="logout"><a href="#">logout</a></li>
 
     // Add the button "modifier" to edit
     const modifyButton = document.createElement("div");
@@ -117,13 +117,7 @@ async function run() {
         generateGalleryNode(works);
     }
     catch(error) {
-        if(error instanceof CustomError) {
-            error.handleError();
-        }
-        else {
-            new CustomError(ACTION.GET_WORK).handleError();
-            return;
-        }
+        manageError(error);
     }
 
     // Get and display categories from API
@@ -140,13 +134,7 @@ async function run() {
         }
     }
     catch(error) {
-        if(error instanceof CustomError) {
-            error.handleError();
-        }
-        else {
-            new CustomError(ACTION.GET_CATEGORY).handleError();
-            return;
-        }
+        manageError(error);
     }
 
     // Initialize listeners
@@ -200,29 +188,19 @@ function logout(event){
 }
 
 /**************** FUNCTIONS API ***************/
-
-/**
- * The custom error
- */
-class CustomError extends Error {
-    constructor(action,errorStatus) {
-        super();
-        this.name = "CustomError";
-
-        let errorMessage = MAP_ERROR.has(action) ? MAP_ERROR.get(action) + " " : "";
-        let cause = CAUSE_ERROR.has(errorStatus) ? CAUSE_ERROR.get(errorStatus) :  "";
-        this.message  = errorMessage + cause;
-    }
-
-    /**
-     * Error display management
-     */
-    handleError() {
-        const page = currentModal ? currentModal : document;
-        const errorElt = page.querySelector('.message-error');
-        errorElt.innerHTML = this.message;
-        errorElt.style.display = "block";
-    }
+ /**
+   * Error display management
+   */
+function manageError(error) { 
+    let errorMessage = MAP_ERROR.has(error.message) ? MAP_ERROR.get(error.message) + " " :  (error instanceof TypeError) ? MAP_ERROR.get(ACTION.CONNECTION) : MAP_ERROR.get(ACTION.OTHER);
+    let cause = CAUSE_ERROR.has(error.cause) ? CAUSE_ERROR.get(error.cause) :  "";
+    
+    const page = currentModal ? currentModal : document;
+    const errorElt = page.querySelector('.message-error');
+    errorElt.innerHTML = `${errorMessage} <br> ${cause}`;
+    errorElt.style.display = "block"; 
+    errorElt.style.left = "50%";
+    errorElt.style.transform= currentModal ? "translate(-50%,80%)" : "translate(-50%,-50%)";
 }
 
 /**
@@ -232,7 +210,7 @@ class CustomError extends Error {
 async function getWorks() {
     const reponse = await fetch(`${HOST}/works`);
     if(!reponse.ok){
-        throw new CustomError(ACTION.GET_WORK,reponse.status);
+        throw new Error(ACTION.GET_WORK,{ cause: reponse.status });
     }
     return reponse.json();
 }
@@ -251,7 +229,7 @@ async function postWork(work) {
     });
 
     if (!reponse.ok) {
-        throw new CustomError(ACTION.POST,reponse.status);
+        throw new Error(ACTION.POST,{ cause: reponse.status });
     }
     return reponse.json();
 }
@@ -262,13 +240,13 @@ async function postWork(work) {
  * @returns 
  */
 async function deleteWork(workId){
-    const reponse = await fetch(`${HOST}/works/${workId}`, {
+    const reponse = await fetch(`${HOST}/worksr/${workId}`, {
             method: "DELETE",
             headers: {  authorization : `Bearer ${window.sessionStorage.getItem(TOKEN_KEY)}` }
     });
 
     if(!reponse.ok){
-        throw new CustomError(ACTION.DELETE,reponse.status);
+        throw new Error(ACTION.DELETE,{ cause: reponse.status });
     }
 }
 
@@ -290,12 +268,7 @@ async function addWork(event){
         // hide modal
         hideModal(event);
     } catch (error) {
-        if(error instanceof CustomError) {
-            error.handleError();
-        }
-        else {
-            new CustomError(ACTION.POST).handleError();
-        }
+        manageError(error);
     }
 }
 
@@ -315,12 +288,7 @@ async function removeWork(event) {
         unsubscribeTrashButton(workId);
         document.querySelectorAll(".work"+workId).forEach(work=> work.remove());
     } catch (error) {
-        if(error instanceof CustomError) {
-            error.handleError();
-        }
-        else {
-            new CustomError(ACTION.DELETE).handleError();
-        }
+        manageError(error);
     }
 }
 
@@ -329,9 +297,9 @@ async function removeWork(event) {
  * @returns Return categories
  */
 async function getCategories(){
-    const reponse = await fetch(`${HOST}/categories`);
+    const reponse = await fetch(`${HOST}/categoriesd`);
     if(!reponse.ok) {
-        throw new CustomError(ACTION.GET_CATEGORY,reponse.status);
+        throw new Error(ACTION.GET_CATEGORY,{ cause: reponse.status });
     }
 
     return reponse.json();
@@ -680,13 +648,13 @@ function enableValidateButton() {
     var categoryValid = category !== BUTTON_ALL_ID;  
  
     if(fileChanged && (!imageValid || !extensionValid)) {
-        new CustomError(ACTION.UPLOAD_FILE).handleError();
+        manageError(new Error(ACTION.UPLOAD_FILE));
     }
     else if(title.trim().length > 0 && !titleValid) {
-        new CustomError(ACTION.IMAGE_TITLE).handleError();
+        manageError(new Error(ACTION.IMAGE_TITLE));
     }
     else if(categoryChanged && !categoryValid) {
-        new CustomError(ACTION.CATEGORY_SELECT).handleError();
+        manageError(new Error(ACTION.CATEGORY_SELECT));
     }
     else {
         addModal.querySelector('.message-error').style.display = "none";

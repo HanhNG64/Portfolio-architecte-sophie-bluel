@@ -29,9 +29,9 @@ const CAUSE_LOGIN_ERROR = new Map([
 
 // Subscribe listeners
 const form = document.getElementById("login");
-document.getElementById("login").addEventListener("submit", handleLogin);
-form.querySelector('[name=email]').addEventListener('blur', handleValidate);
-form.querySelector('[name=pwd]').addEventListener('blur', handleValidate);
+form.addEventListener("submit", handleLogin);
+form.querySelector('[name=email]').addEventListener('blur', handleInformation);
+form.querySelector('[name=pwd]').addEventListener('blur', handleInformation);
 
 // Create an element to display the error message
 let errorElt = document.createElement('p');
@@ -45,37 +45,19 @@ window.addEventListener('beforeunload', (e)=>{
 
 /********************************** FUNCTIONS ************************** */
 
-/**
- * The custom error
- */
-class LoginCustomError extends Error {
-  constructor(action,errorStatus) {
-      super();
-      this.name = "LoginCustomError";
-
-      let errorMessage = MAP_LOGIN_ERROR.has(action) ? MAP_LOGIN_ERROR.get(action) + " " : "";
-      let cause = CAUSE_LOGIN_ERROR.has(errorStatus) ? CAUSE_LOGIN_ERROR.get(errorStatus) :  "";
-
-      this.message  = `${errorMessage} <br> ${cause}`;
-  }
-
-  /**
+ /**
    * Error display management
    */
-  handleError(isValide) {
-      if(isValide) {
-        errorElt.innerHTML = "";
-        errorElt.classList.remove('error');
-      }
-      else {
-        errorElt.innerHTML = this.message;
-        errorElt.classList.add('error');
-      }
-  }
+ function manageError(error) {
+  let errorMessage = MAP_LOGIN_ERROR.has(error.message) ? MAP_LOGIN_ERROR.get(error.message) + " " : MAP_LOGIN_ERROR.get(INPUT_NAME.CONNECTION);
+  let cause = CAUSE_LOGIN_ERROR.has(error.cause) ? CAUSE_LOGIN_ERROR.get(error.cause) :  "";
+
+  errorElt.innerHTML =  `${errorMessage} <br> ${cause}`;
+  errorElt.classList.add('error');
 }
 
 /**
- * Connect the user as Admin
+ * Triggered when valid button is activated
  * @param {*} event 
  * @returns 
  */
@@ -94,12 +76,27 @@ async function handleLogin(event) {
     // Redirect to home page
     window.location.href = "../index.html";
   } catch (error) {
-    if(error instanceof LoginCustomError) {
-      error.handleError(false);
-    }
-    else {
-      new LoginCustomError(INPUT_NAME.CONNECTION).handleError(false);
-    }
+    manageError(error);
+  }
+}
+
+/**
+ * Triggered when a pwd or email changed
+ * @param {*} event 
+ */
+function handleInformation(event) {
+  const input =  event.target;
+  const pattern = MAP_PATTERN.get(input.name);
+  const value =  input.value.trim();
+  const isValide = (value.length === 0 ? true :  pattern.test(value));  
+
+  if(!isValide) {
+    errorElt.innerHTML =  `${MAP_LOGIN_ERROR.get(input.name)}  <br> ${CAUSE_LOGIN_ERROR.get(input.name)}`;
+    errorElt.classList.add('error');
+  }
+  else {
+    errorElt.innerHTML = "";
+    errorElt.classList.remove('error');
   }
 }
 
@@ -118,7 +115,7 @@ async function logIn(user) {
     });
 
     if (!reponse.ok) {
-      throw  new LoginCustomError(INPUT_NAME.CONNECTION,reponse.status);
+      throw new Error(INPUT_NAME.CONNECTION,{ cause: reponse.status });
     }
 
     return reponse.json();
@@ -139,25 +136,11 @@ function buildUser(event) {
 }
 
 /**
- * Validate the entry 
- * @param {*} event 
- */
-function handleValidate(event) {
-  const input =  event.target;
-  const pattern = MAP_PATTERN.get(input.name);
-  const value =  input.value.trim();
-  const isValide = (value.length === 0 ? true :  pattern.test(value));  
-
-  new LoginCustomError(input.name, input.name).handleError(isValide);
-}
-
-/**
  * Unsubscribe all listeners
  */
 function unsubscribeListeners() {
-  console.log("BYE unsubscribeListeners");
   const form = document.getElementById("login");
-  document.getElementById("login").removeEventListener("submit", handleLogin);
-  form.querySelector('[name=email]').removeEventListener('blur', handleValidate);
-  form.querySelector('[name=pwd]').removeEventListener('blur', handleValidate);
+  form.removeEventListener("submit", handleLogin);
+  form.querySelector('[name=email]').removeEventListener('blur', handleInformation);
+  form.querySelector('[name=pwd]').removeEventListener('blur', handleInformation);
 }
