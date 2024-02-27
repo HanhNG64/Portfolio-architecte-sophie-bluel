@@ -6,6 +6,7 @@ const PW_PATTERN = /^(?=.*[A-z])(?=.*[A-Z])(?=.*[0-9])\S{6,12}$/; // Regex for p
 const INPUT_NAME = {
   EMAIL:"email",
   PWD : "pwd",
+  IDENTIFIANT : "Identifiant",
   CONNECTION: "connection"
 }
 
@@ -15,20 +16,19 @@ const MAP_PATTERN = new Map([
 ]);
 
 const MAP_LOGIN_ERROR = new Map([
-  [INPUT_NAME.EMAIL, 'Email non valide.'],
+  [INPUT_NAME.EMAIL, 'E-mail non valide.'],
   [INPUT_NAME.PWD, 'Mot de passe non valide.'],
   [INPUT_NAME.CONNECTION, 'Connexion impossible.'],
 ]);
 
 const CAUSE_LOGIN_ERROR = new Map([
-  [INPUT_NAME.EMAIL, "Le format d'email n'est pas valide."],
+  [INPUT_NAME.EMAIL, "Le format d'e-mail n'est pas valide."],
   [INPUT_NAME.PWD, "Le mot de passe doit avoir au moins une lettre, avec une majuscule, un chiffre, entre 6 et 12 caractères."],
-  [401, 'Mot de passe non valide.'],
-  [404, 'Email non valide.']
+  [INPUT_NAME.IDENTIFIANT, "Erreur d'identifiant"]
 ]);
 
 // Subscribe listeners
-document.getElementById("login").addEventListener("submit", handleLogin);
+document.getElementById("login-form").addEventListener("submit", handleLogin);
 
 // Create an element to display the error message
 let errorElt = document.createElement('p');
@@ -72,7 +72,7 @@ async function handleLogin(event) {
     // Log the user
     var userLogged = await logIn(event);
 
-    // Store the token in localStorage
+    // Store the token in sessionStorage
     window.sessionStorage.setItem(TOKEN_KEY, userLogged.token);
 
     // Redirect to home page
@@ -114,13 +114,12 @@ async function logIn(user) {
     var userToLog = buildUser(user);
     const reponse = await fetch(HOST+"/users/login", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json" },
-          body: JSON.stringify(userToLog)
+        headers: {"Content-Type": "application/json" },
+        body: JSON.stringify(userToLog)
     });
 
     if (!reponse.ok) {
-      throw new Error(INPUT_NAME.CONNECTION,{ cause: reponse.status });
+      throw new Error(INPUT_NAME.CONNECTION,{ cause: INPUT_NAME.IDENTIFIANT });
     }
 
     return reponse.json();
@@ -133,7 +132,7 @@ async function logIn(user) {
  */
 function buildUser(event) {
     const userToLog = {
-        email: event.target.querySelector("[name=email]").value,
+        email: event.target.querySelector("[name=email]").value.toLowerCase(),
         password: event.target.querySelector("[name=pwd]").value,
     };
   
@@ -144,5 +143,5 @@ function buildUser(event) {
  * Unsubscribe all listeners
  */
 function unsubscribeListeners() {
-  document.getElementById("login").removeEventListener("submit", handleLogin);
+  document.getElementById("login-form").removeEventListener("submit", handleLogin);
 }

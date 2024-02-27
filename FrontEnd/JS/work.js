@@ -28,7 +28,7 @@ const MAP_ERROR = new Map([
 ]);
 const CAUSE_ERROR = new Map([
     [401, 'Authentification erronée.'],
-    [404, 'Ressource non trouvée.']
+    [404, 'Page non trouvée.']
 ]);
 const MODE = {
     CONSULTATION :  0,
@@ -125,10 +125,10 @@ async function run() {
         Array.prototype.push.apply(categories, await getCategories()); 
         generateFilterNode(categories);
 
-        // Apply default filter
-        const categorie = categories.filter(categorie=> categorie.id === BUTTON_ALL_ID).shift();
-        if(categorie && currentCategoryFilter === undefined) {
-            const btn = document.getElementById(categorie.id);
+        // Apply the filter on the category ALL
+        const categoryAll = categories.filter(category=> category.id === BUTTON_ALL_ID).shift();
+        if(categoryAll && currentCategoryFilter === undefined) {
+            const btn = document.getElementById(categoryAll.id);
             btn.classList.add("selected");
             currentCategoryFilter = btn;
         }
@@ -181,7 +181,7 @@ function refreshHomePage(isEditingMode){
  */
 function logout(event){
     if(editingMode.isEditing()) {
-        // Remove token and refresh the home page
+        // Remove token and reload the home page
         window.sessionStorage.removeItem(TOKEN_KEY);
         window.location.href = "./index.html";
     }
@@ -223,9 +223,8 @@ async function getWorks() {
 async function postWork(work) {
     const reponse = await fetch(`${HOST}/works`, {
         method: "POST",
-        headers: { 
-            authorization : `Bearer ${window.sessionStorage.getItem(TOKEN_KEY)}`},
-            body: work,
+        headers: { authorization : `Bearer ${window.sessionStorage.getItem(TOKEN_KEY)}`},
+        body: work,
     });
 
     if (!reponse.ok) {
@@ -278,7 +277,7 @@ async function addWork(event){
  */
 async function removeWork(event) {
     try {
-        const workId =Number(event.target.id);
+        const workId =Number(event.target.dataset.id);
         await deleteWork(workId);
       
         // Update works list
@@ -353,21 +352,17 @@ function generateDeleteGalleryNode() {
     gallery.innerHTML = "";
   
     works.forEach((work) => {
-        try {
-            const figure = createWorkNode(work);
+        const figure = createWorkNode(work);
 
-            const trashImg = document.createElement("img");
-            trashImg.classList.add("trash");
-            trashImg.id = work.id;
-            trashImg.src = "../assets/icons/trash-can-solid.png";
-            trashImg.alt = "trash "+work.title;
-            trashImg.addEventListener('click', removeWork);
+        const trashImg = document.createElement("img");
+        trashImg.classList.add("trash");
+        trashImg.dataset.id = work.id;
+        trashImg.src = "../assets/icons/trash-can-solid.png";
+        trashImg.alt = "trash "+work.title;
+        trashImg.addEventListener('click', removeWork);
 
-            figure.appendChild(trashImg);
-            gallery.appendChild(figure);
-        } catch (error) {
-            handleError(error);
-        }
+        figure.appendChild(trashImg);
+        gallery.appendChild(figure);
     });
 }
 
@@ -436,9 +431,9 @@ function handleFilter(event) {
     if(currentCategoryFilter) currentCategoryFilter.classList.remove("selected");
     currentCategoryFilter = btn;    
 
-    function filter(categorieId) {
+    function filter(categoryId) {
         if(works.length) {
-            var filterWorks = categorieId === BUTTON_ALL_ID ? works :  works.filter(work => categorieId === work.categoryId);
+            var filterWorks = categoryId === BUTTON_ALL_ID ? works :  works.filter(work => categoryId === work.categoryId);
             generateGalleryNode(filterWorks);
         }
     }
@@ -482,7 +477,9 @@ function opendAddModal(event) {
     //hide error message
     modal.querySelector('.message-error').style.display = "none";
 
+    // reset
     fileChanged = false;
+    categoryChanged = false;
     document.getElementById("data-form").reset();
     refreshPreview(event);
 
@@ -698,7 +695,6 @@ function unsubscribeListeners() {
         addModal.querySelector('.modal-previous').removeEventListener('click', previousModal);
         addModal.querySelector('.modal-close').removeEventListener('click', hideModal);
         addModal.querySelector('.modal-stop').removeEventListener('click',stopPropagation);
-        document.getElementById("data-form").removeEventListener('submit', addWork);
         document.getElementById("data-form").removeEventListener('submit', addWork);
         document.querySelector('input[type=file]').removeEventListener('change', handleFile);
         document.querySelector('[name=title]').removeEventListener('keyup', handleImageTitle);
