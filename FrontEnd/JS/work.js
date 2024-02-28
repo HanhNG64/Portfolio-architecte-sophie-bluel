@@ -44,7 +44,7 @@ let categoryChanged = false; // Flag indicates that the user has already changed
 
 let works = [];
 let categories = [{
-    // Catégorie pour Tous
+    // Category for ALL
     "id": BUTTON_ALL_ID,
     "name": BUTTON_ALL_NAME
 }];
