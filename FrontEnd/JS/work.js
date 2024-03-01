@@ -513,10 +513,11 @@ function openDeleteModal(event) {
         modal.querySelector('.modal-stop').addEventListener('click', stopPropagation);
 
         deleteModal = modal;
-
-        // Display works in the modal
-        generateDeleteGalleryNode();
     }
+
+    // Display works in the modal
+    generateDeleteGalleryNode();
+
     //hide error message
     modal.querySelector('.message-error').style.display = "none";
 
